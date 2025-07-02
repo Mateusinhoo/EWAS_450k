@@ -58,19 +58,18 @@ dmr_infile = [results_bed]
 dmr_outfiles = [dmr_acf, dmr_args, dmr_fdr, dmr_regions, dmr_slk]
 
 #---- DETERMINE INPUT FILES FOR RULE ALL ----#
-if STRATIFIED == "yes":
-    in_files = [PHENO, MVALS, strat_raw_results, strat_bacon_results,
-                strat_bacon_plots, meta_analysis_results,
-                annotated_results, manhattan_qq_plot]
-else:
-    in_files = [PHENO, MVALS, raw_results, bacon_results, 
-                bacon_plots, annotated_results, 
-                manhattan_qq_plot]
-
-if DMR == "yes":
-    in_files = in_files + dmr_infile + dmr_outfiles
-else:
-    in_files = in_files
+rule all:
+    input:
+        PHENO,
+        MVALS,
+        # Use expand directly here
+        *(expand(OUT_DIR + "{group}/{group}_" + ASSOC + "_ewas_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + ASSOC + "_ewas_results" + OUT_TYPE]),
+        *(expand(OUT_DIR + "{group}/{group}_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + ASSOC + "_ewas_bacon_results" + OUT_TYPE]),
+        *(expand(OUT_DIR + "{group}/bacon_plots/{group}_" + ASSOC + "_{plot}.jpg", group=GROUPS, plot=PLOTS) if STRATIFIED == "yes" else expand(OUT_DIR + "bacon_plots/" + ASSOC + "_{plot}.jpg", plot=PLOTS)),
+        meta_analysis_results if STRATIFIED == "yes" else [],
+        annotated_results,
+        manhattan_qq_plot,
+        *( [results_bed, dmr_acf, dmr_args, dmr_fdr, dmr_regions, dmr_slk] if DMR == "yes" else [] )
 
 #---- BEGIN WORKFLOW ----#
 rule all:
