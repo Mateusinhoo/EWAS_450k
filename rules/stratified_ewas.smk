@@ -25,21 +25,12 @@ rule stratify_data:
 rule run_ewas:
     input:
         script = "scripts/ewas.R",
-        pheno_file = lambda wildcards: f"{OUT_DIR}{wildcards.group}/{wildcards.group}_pheno.fst",
-        methyl_file = lambda wildcards: f"{OUT_DIR}{wildcards.group}/{wildcards.group}_mvals.fst"
-    params:
-        assoc_var = ASSOC,
-        stratified = STRATIFIED,
-        cs = CHUNK_SIZE,
-        pt = PROCESSING_TYPE,
-        n_workers = N_WORKERS,
-        o_dir = lambda wildcards: f"{OUT_DIR}{wildcards.group}/",
-        o_type = OUT_TYPE,
-        o_prefix = lambda wildcards: f"{wildcards.group}"
+        pheno_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_pheno.fst",
+        methyl_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_mvals.fst"
     output: 
-        lambda wildcards: f"{OUT_DIR}{wildcards.group}/{wildcards.group}_{ASSOC}_ewas_results{OUT_TYPE}"
+        lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}"
     log:
-        lambda wildcards: f"log/{wildcards.group}_ewas.log"
+        lambda wc: f"log/{wc.group}_ewas.log"
     conda:
         "../envs/ewas.yaml"
     shell:
@@ -48,30 +39,26 @@ rule run_ewas:
         Rscript {input.script} \
         --pheno {input.pheno_file} \
         --methyl {input.methyl_file} \
-        --assoc {params.assoc_var} \
-        --stratified {params.stratified} \
-        --chunk-size {params.cs} \
-        --processing-type {params.pt} \
-        --workers {params.n_workers} \
-        --out-dir {params.o_dir} \
-        --out-type {params.o_type} \
-        --out-prefix {params.o_prefix} \
+        --assoc {ASSOC} \
+        --stratified {STRATIFIED} \
+        --chunk-size {CHUNK_SIZE} \
+        --processing-type {PROCESSING_TYPE} \
+        --workers {N_WORKERS} \
+        --out-dir {OUT_DIR}{wildcards.group}/ \
+        --out-type {OUT_TYPE} \
+        --out-prefix {wildcards.group} \
         > {log} 2>&1
         """
 
 rule run_bacon:
     input:
-        in_file = lambda wildcards: f"{OUT_DIR}{wildcards.group}/{wildcards.group}_{ASSOC}_ewas_results{OUT_TYPE}",
+        in_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}",
         script = "scripts/run_bacon.R"
-    params:
-        o_dir = lambda wildcards: f"{OUT_DIR}{wildcards.group}/",
-        o_type = OUT_TYPE,
-        o_prefix = lambda wildcards: f"{wildcards.group}"
     output: 
-        lambda wildcards: [
-            f"{OUT_DIR}{wildcards.group}/{wildcards.group}_{ASSOC}_ewas_bacon_results{OUT_TYPE}"
+        lambda wc: [
+            f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_bacon_results{OUT_TYPE}"
         ] + [
-            f"{OUT_DIR}{wildcards.group}/bacon_plots/{wildcards.group}_{ASSOC}_{plot}.jpg"
+            f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_{plot}.jpg"
             for plot in PLOTS
         ]
     conda:
@@ -80,9 +67,9 @@ rule run_bacon:
         """
         Rscript {input.script} \
         --input-file {input.in_file} \
-        --out-dir {params.o_dir} \
-        --out-prefix {params.o_prefix} \
-        --out-type {params.o_type}
+        --out-dir {OUT_DIR}{wildcards.group}/ \
+        --out-prefix {wildcards.group} \
+        --out-type {OUT_TYPE}
         """
 
 rule make_metal_script:
