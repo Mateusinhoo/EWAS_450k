@@ -30,7 +30,7 @@ rule run_ewas_stratified:
     output:
         result = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}"
     log:
-        logfile = lambda wc: f"log/{wc.group}_ewas.log"
+        lambda wc: f"log/{wc.group}_ewas.log"
     conda:
         "../envs/ewas.yaml"
     shell:
