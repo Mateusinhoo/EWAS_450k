@@ -41,17 +41,26 @@ out_type <- args$out_type
 # Read in EWAS summary statistics
 ewas <- fread(results)
 
-# Load annotation data
-hg38 <- fread("annotation_files/EPIC_hg38.tsv.gz")
-hg38 <- hg38 %>% dplyr::rename(cpgid = "probeID") 
-cpg.to.rs <- fread("annotation_files/EPIC_snp_key.tsv.gz")
-cpg.to.rs <- cpg.to.rs %>%
-    dplyr::select(probeID, snpID, snpChrm, snpEnd, snpRef,
-                snpAlt, GAN, GAC, GAF,distance) %>%
-    distinct(probeID, .keep_all = T) %>% 
-    dplyr::rename("cpgid" = "probeID")
-annotation <- left_join(hg38, cpg.to.rs, by = "cpgid")
-rm(hg38, cpg.to.rs)
+# Load 450k annotation from Bioconductor
+suppressPackageStartupMessages({
+  library(IlluminaHumanMethylation450kanno.ilmn12.hg38)
+})
+
+data("Locations")   # CpG positions
+data("Other")       # UCSC and gene context
+data("Manifest")    # Misc info
+
+# Convert Locations to a data frame with cpgid column
+ann_locations <- as.data.frame(Locations)
+ann_locations$cpgid <- rownames(ann_locations)
+
+# Optionally add UCSC gene info (e.g., gene names)
+ann_genes <- as.data.frame(Other$UCSC_RefGene_Name)
+colnames(ann_genes) <- "gene"
+ann_genes$cpgid <- rownames(ann_genes)
+
+# Merge into a final annotation table
+annotation <- dplyr::left_join(ann_locations, ann_genes, by = "cpgid")
 
 if(stratified=="no"){
     ewas <- left_join(ewas, annotation, by = "cpgid")
