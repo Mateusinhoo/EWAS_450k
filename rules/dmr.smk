@@ -1,4 +1,4 @@
-rule make_bed:
+# rule make_bed:
     input: 
         in_file = annotated_results,
         script = "scripts/make_bed.R"
