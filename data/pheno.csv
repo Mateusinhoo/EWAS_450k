@@ -1,7 +1,8 @@
-sampleID | cancer_type | ethnicity | sex
-sample_1	brain	Native	M
-sample_2	brain	NonNative	F
-sample_3	blood	Native	M
+| sampleID | cancer_type | ethnicity | sex |
+|----------|
+| sample_1 | brain | Native | M |
+|sample_2	brain	NonNative	F
+|sample_3	blood	Native	M
 sample_4	blood	NonNative	F
 sample_5	brain	Native	F
 sample_6	blood	NonNative	M
