@@ -91,3 +91,6 @@ rule run_metal:
         "library://krferrier/metal/meta_analysis:metal"
     shell: 
         "metal {input.script}"
+
+for group in GROUPS:
+    expand("results/{group}/{group}_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE, group=[group])
