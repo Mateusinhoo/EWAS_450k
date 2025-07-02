@@ -72,9 +72,9 @@ rule all:
         *( [results_bed, dmr_acf, dmr_args, dmr_fdr, dmr_regions, dmr_slk] if DMR == "yes" else [] )
 
 #---- BEGIN WORKFLOW ----#
-rule all:
-    input:
-        in_files
+# rule all:
+#    input:
+#        in_files
 
 
 include: "rules/combined_ewas.smk"
