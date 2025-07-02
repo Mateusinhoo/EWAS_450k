@@ -19,9 +19,11 @@ PLOTS = ["traces", "posteriors", "fit", "qqs"]
 # DMR VARIABLES
 DMR = config["dmr_analysis"]
 ANNO = config["genome_build"]
-MIN_P = config["min_pvalue"]
-WIN_SZ = config["window_size"]
-REGION_FILTER = config["region_filter"]
+
+if DMR == "yes":
+    MIN_P = config["min_pvalue"]
+    WIN_SZ = config["window_size"]
+    REGION_FILTER = config["region_filter"]
 
 # Stratified EWAS
 GROUPS = generate_observed_combinations(df=pd.read_csv(config["pheno"]), stratify_cols=config["stratify_variables"])
