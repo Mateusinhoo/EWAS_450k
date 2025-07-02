@@ -22,15 +22,15 @@ rule stratify_data:
         --threads {params.n_threads}
         """
 
-rule run_ewas:
+rule run_ewas_stratified:
     input:
         script = "scripts/ewas.R",
         pheno_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_pheno.fst",
         methyl_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_mvals.fst"
-    output: 
+    output:
         result = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}"
     log:
-        "log/{group}_ewas.log"
+        lambda wc: f"log/{wc.group}_ewas.log"
     conda:
         "../envs/ewas.yaml"
     shell:
@@ -50,11 +50,11 @@ rule run_ewas:
         > {log} 2>&1
         """
 
-rule run_bacon:
+rule run_bacon_stratified:
     input:
         in_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}",
         script = "scripts/run_bacon.R"
-    output: 
+    output:
         result = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_bacon_results{OUT_TYPE}",
         trace = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_traces.jpg",
         post = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_posteriors.jpg",
