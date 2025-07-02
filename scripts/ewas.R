@@ -207,5 +207,11 @@ if (stratified == "yes"){
     filename <- paste0(out_dir, assoc_var, "_ewas_results", out_type)
 }
 
-fwrite(results, file = filename)
+if (endsWith(filename, ".gz")) {
+  gz <- gzfile(filename, "w")
+  write.csv(results, gz, row.names = FALSE)
+  close(gz)
+} else {
+  write.csv(results, file = filename, row.names = FALSE)
+}
 
