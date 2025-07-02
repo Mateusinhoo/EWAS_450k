@@ -1,11 +1,11 @@
-sampleID,sex,re,BMI
-sample_1,M,1,21
-sample_2,F,2,23
-sample_3,M,3,26
-sample_4,M,1,19
-sample_5,F,2,25
-sample_6,F,3,29
-sample_7,F,1,22
-sample_8,M,2,31
-sample_9,F,3,24
-sample_10,F,4,32
+sampleID	cancer_type	ethnicity	sex
+sample_1	brain	Native	M
+sample_2	brain	NonNative	F
+sample_3	blood	Native	M
+sample_4	blood	NonNative	F
+sample_5	brain	Native	F
+sample_6	blood	NonNative	M
+sample_7	brain	Native	F
+sample_8	blood	Native	M
+sample_9	blood	NonNative	F
+sample_10	brain	NonNative	F
