@@ -30,7 +30,7 @@ rule run_ewas_stratified:
     output:
         result = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}"
     log:
-        lambda wc: f"log/{wc.group}_ewas.log"
+        logfile = lambda wc: f"log/{wc.group}_ewas.log"
     conda:
         "../envs/ewas.yaml"
     shell:
@@ -47,7 +47,7 @@ rule run_ewas_stratified:
         --out-dir {OUT_DIR}{wildcards.group}/ \
         --out-type {OUT_TYPE} \
         --out-prefix {wildcards.group} \
-        > {log} 2>&1
+        > {log.logfile} 2>&1
         """
 
 rule run_bacon_stratified:
