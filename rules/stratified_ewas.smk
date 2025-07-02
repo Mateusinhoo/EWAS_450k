@@ -25,12 +25,12 @@ rule stratify_data:
 rule run_ewas_stratified:
     input:
         script = "scripts/ewas.R",
-        pheno_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_pheno.fst",
-        methyl_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_mvals.fst"
+        pheno_file = OUT_DIR + "{group}/{group}_pheno.fst",
+        methyl_file = OUT_DIR + "{group}/{group}_mvals.fst"
     output:
-        result = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}"
+        result = OUT_DIR + "{group}/{group}_" + ASSOC + "_ewas_results" + OUT_TYPE
     log:
-        lambda wc: f"log/{wc.group}_ewas.log"
+        "log/{group}_ewas.log"
     conda:
         "../envs/ewas.yaml"
     shell:
@@ -47,19 +47,19 @@ rule run_ewas_stratified:
         --out-dir {OUT_DIR}{wildcards.group}/ \
         --out-type {OUT_TYPE} \
         --out-prefix {wildcards.group} \
-        > {log.logfile} 2>&1
+        > {log} 2>&1
         """
 
 rule run_bacon_stratified:
     input:
-        in_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}",
+        in_file = OUT_DIR + "{group}/{group}_" + ASSOC + "_ewas_results" + OUT_TYPE,
         script = "scripts/run_bacon.R"
     output:
-        result = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_bacon_results{OUT_TYPE}",
-        trace = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_traces.jpg",
-        post = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_posteriors.jpg",
-        fit = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_fit.jpg",
-        qq = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_qqs.jpg"
+        result = OUT_DIR + "{group}/{group}_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE,
+        trace = OUT_DIR + "{group}/bacon_plots/{group}_" + ASSOC + "_traces.jpg",
+        post = OUT_DIR + "{group}/bacon_plots/{group}_" + ASSOC + "_posteriors.jpg",
+        fit = OUT_DIR + "{group}/bacon_plots/{group}_" + ASSOC + "_fit.jpg",
+        qq = OUT_DIR + "{group}/bacon_plots/{group}_" + ASSOC + "_qqs.jpg"
     conda:
         "../envs/ewas.yaml"
     shell:
