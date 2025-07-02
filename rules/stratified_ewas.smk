@@ -22,69 +22,68 @@ rule stratify_data:
         --threads {params.n_threads}
         """
 
+rule run_ewas:
+    input:
+        script = "scripts/ewas.R",
+        pheno_file = lambda wildcards: f"{OUT_DIR}{wildcards.group}/{wildcards.group}_pheno.fst",
+        methyl_file = lambda wildcards: f"{OUT_DIR}{wildcards.group}/{wildcards.group}_mvals.fst"
+    params:
+        assoc_var = ASSOC,
+        stratified = STRATIFIED,
+        cs = CHUNK_SIZE,
+        pt = PROCESSING_TYPE,
+        n_workers = N_WORKERS,
+        o_dir = lambda wildcards: f"{OUT_DIR}{wildcards.group}/",
+        o_type = OUT_TYPE,
+        o_prefix = lambda wildcards: f"{wildcards.group}"
+    output: 
+        lambda wildcards: f"{OUT_DIR}{wildcards.group}/{wildcards.group}_{ASSOC}_ewas_results{OUT_TYPE}"
+    log:
+        lambda wildcards: f"log/{wildcards.group}_ewas.log"
+    conda:
+        "../envs/ewas.yaml"
+    shell:
+        """
+        export R_PROGRESSR_ENABLE=TRUE 
+        Rscript {input.script} \
+        --pheno {input.pheno_file} \
+        --methyl {input.methyl_file} \
+        --assoc {params.assoc_var} \
+        --stratified {params.stratified} \
+        --chunk-size {params.cs} \
+        --processing-type {params.pt} \
+        --workers {params.n_workers} \
+        --out-dir {params.o_dir} \
+        --out-type {params.o_type} \
+        --out-prefix {params.o_prefix} \
+        > {log} 2>&1
+        """
 
-for group in GROUPS:
-    rule:
-        name:
-            f"run_ewas_{group}"
-        input:
-            script = "scripts/ewas.R",
-            pheno_file = OUT_DIR + f"{group}/{group}_pheno.fst",
-            methyl_file= OUT_DIR + f"{group}/{group}_mvals.fst"
-        params:
-            assoc_var = ASSOC,
-            stratified = STRATIFIED,
-            cs = config["chunk_size"],
-            pt = config["processing_type"],
-            n_workers = N_WORKERS,
-            o_dir = OUT_DIR + f"{group}/",
-            o_type = OUT_TYPE,
-            o_prefix = f"{group}"
-        output: 
-            OUT_DIR + f"{group}/{group}_" + ASSOC + "_ewas_results" + OUT_TYPE
-        log:
-            f"log/{group}_ewas.log"
-        conda:
-            "../envs/ewas.yaml"
-        shell:
-            """
-            export R_PROGRESSR_ENABLE=TRUE 
-            Rscript {input.script} \
-            --pheno {input.pheno_file} \
-            --methyl {input.methyl_file} \
-            --assoc {params.assoc_var} \
-            --stratified {params.stratified} \
-            --chunk-size {params.cs} \
-            --processing-type {params.pt} \
-            --workers {params.n_workers} \
-            --out-dir {params.o_dir} \
-            --out-type {params.o_type} \
-            --out-prefix {params.o_prefix} \
-            > {log} 2>&1
-            """
-    rule:
-        name:
-            f"run_bacon_{group}"
-        input:
-            in_file = OUT_DIR + f"{group}/{group}_" + ASSOC + "_ewas_results" + OUT_TYPE,
-            script = "scripts/run_bacon.R"
-        params:
-            o_dir = OUT_DIR + f"{group}/",
-            o_type = OUT_TYPE,
-            o_prefix = f"{group}"
-        output: 
-            OUT_DIR + f"{group}/{group}_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE,
-            expand(OUT_DIR + f"{group}/bacon_plots/{group}_" + ASSOC + "_{plot}.jpg", plot = PLOTS)
-        conda:
-            "../envs/ewas.yaml"
-        shell:
-            """
-            Rscript {input.script} \
-            --input-file {input.in_file} \
-            --out-dir {params.o_dir} \
-            --out-prefix {params.o_prefix} \
-            --out-type {params.o_type} \
-            """
+rule run_bacon:
+    input:
+        in_file = lambda wildcards: f"{OUT_DIR}{wildcards.group}/{wildcards.group}_{ASSOC}_ewas_results{OUT_TYPE}",
+        script = "scripts/run_bacon.R"
+    params:
+        o_dir = lambda wildcards: f"{OUT_DIR}{wildcards.group}/",
+        o_type = OUT_TYPE,
+        o_prefix = lambda wildcards: f"{wildcards.group}"
+    output: 
+        lambda wildcards: [
+            f"{OUT_DIR}{wildcards.group}/{wildcards.group}_{ASSOC}_ewas_bacon_results{OUT_TYPE}"
+        ] + [
+            f"{OUT_DIR}{wildcards.group}/bacon_plots/{wildcards.group}_{ASSOC}_{plot}.jpg"
+            for plot in PLOTS
+        ]
+    conda:
+        "../envs/ewas.yaml"
+    shell:
+        """
+        Rscript {input.script} \
+        --input-file {input.in_file} \
+        --out-dir {params.o_dir} \
+        --out-prefix {params.o_prefix} \
+        --out-type {params.o_type}
+        """
 
 rule make_metal_script:
     input:
@@ -96,7 +95,6 @@ rule make_metal_script:
         "scripts/meta_analysis_script.sh"
     shell:
         "sh {input.script} {input.in_files} {params.out_prefix}"
-    
 
 rule run_metal:
     input: 
