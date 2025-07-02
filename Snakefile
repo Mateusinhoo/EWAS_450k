@@ -1,3 +1,5 @@
+default_container: "docker://rocker/tidyverse:4.3.1"
+
 import pandas as pd
 from helper_fxns import generate_observed_combinations
 configfile: "config.yml"
