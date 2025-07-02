@@ -28,9 +28,9 @@ rule run_ewas:
         pheno_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_pheno.fst",
         methyl_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_mvals.fst"
     output: 
-        lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}"
+        result = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}"
     log:
-        lambda wc: f"log/{wc.group}_ewas.log"
+        "log/{group}_ewas.log"
     conda:
         "../envs/ewas.yaml"
     shell:
@@ -55,12 +55,11 @@ rule run_bacon:
         in_file = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_results{OUT_TYPE}",
         script = "scripts/run_bacon.R"
     output: 
-        lambda wc: [
-            f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_bacon_results{OUT_TYPE}"
-        ] + [
-            f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_{plot}.jpg"
-            for plot in PLOTS
-        ]
+        result = lambda wc: f"{OUT_DIR}{wc.group}/{wc.group}_{ASSOC}_ewas_bacon_results{OUT_TYPE}",
+        trace = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_traces.jpg",
+        post = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_posteriors.jpg",
+        fit = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_fit.jpg",
+        qq = lambda wc: f"{OUT_DIR}{wc.group}/bacon_plots/{wc.group}_{ASSOC}_qqs.jpg"
     conda:
         "../envs/ewas.yaml"
     shell:
