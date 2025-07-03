@@ -48,6 +48,13 @@ if (!requireNamespace("IlluminaHumanMethylation450kanno.ilmn12.hg38", quietly = 
     BiocManager::install("IlluminaHumanMethylation450kanno.ilmn12.hg38", ask = FALSE)
 }
 
+# Install bioconductor-qcewas
+if (!requireNamespace("QCEWAS", quietly = TRUE)) {
+    if (!requireNamespace("devtools", quietly = TRUE))
+        install.packages("devtools")
+    devtools::install_github("WaldronLab/QCEWAS", ask = FALSE)
+}
+
 # Load 450k annotation from Bioconductor
 suppressPackageStartupMessages({
   library(IlluminaHumanMethylation450kanno.ilmn12.hg38)
