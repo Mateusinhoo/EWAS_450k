@@ -52,14 +52,8 @@ out_type <- args$out_type
 # Read in EWAS summary statistics
 ewas <- fread(ewas_results)
 assoc <- unique(ewas$term)
-if(filename=="all"){
-       filename <- assoc
-       plotname <- assoc
-} else{
-       filename <- paste0(filename, "_", assoc)
-       plotname <- paste0(plotname, " ", assoc)
-       cat(paste0("Running BACON for subset: ", filename, "\n"))
-}
+plotname <- filename
+cat(paste0("Running BACON for subset: ", filename, "\n"))
 
 # Clean rows with missing or invalid data
 ewas <- ewas %>%
