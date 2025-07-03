@@ -16,7 +16,6 @@ dependencies:
   - r-dplyr
   - r-ggplot2
   - bioconductor-bacon
-  - bioconductor-qcewas
   
   # R packages used in your scripts
   - r-argparse
