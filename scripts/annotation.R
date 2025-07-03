@@ -55,14 +55,16 @@ if (!requireNamespace("QCEWAS", quietly = TRUE)) {
     devtools::install_github("WaldronLab/QCEWAS", ask = FALSE)
 }
 
-# Load 450k annotation from Bioconductor
-# suppressPackageStartupMessages({
-#  library(IlluminaHumanMethylation450kanno.ilmn12.hg38)
-# })
+# Load annotation from TSV files
+ann_locations <- fread("annotation_files/EPIC_hg38.tsv.gz")
+ann_genes <- fread("annotation_files/EPIC_snp_key.tsv.gz")
 
-# data("Locations")   # CpG positions
-# data("Other")       # UCSC and gene context
-# data("Manifest")    # Misc info
+# Make sure column names are set correctly
+colnames(ann_locations)[1] <- "cpgid"  # assuming first column is CpG ID
+colnames(ann_genes)[1] <- "cpgid"
+
+# Merge them together
+annotation <- left_join(ann_locations, ann_genes, by = "cpgid")
 
 # Convert Locations to a data frame with cpgid column
 ann_locations <- as.data.frame(Locations)
