@@ -4,7 +4,7 @@ pheno: "data/pheno.csv"
 
 # EWAS model
 association_variable: "ethnicity"
-stratified_ewas: "yes"
+stratified_ewas: "no"
 stratify_variables: ["cancer_type"]
 
 # DMR (optional)
