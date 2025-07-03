@@ -10,6 +10,7 @@ dependencies:
   - r-biocmanager
   - r-dplyr
   - r-tidyverse
+  - r-tibble
 
   # R packages used in your scripts
   - r-argparse
