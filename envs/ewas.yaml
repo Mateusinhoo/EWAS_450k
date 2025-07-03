@@ -5,20 +5,14 @@ channels:
   - r
   - nodefaults
 dependencies:
-  # Core languages
   - r-base
-
-  # R:
-  - r-essentials  # includes tidyverse, devtools, Rcpp, etc.
+  - r-essentials
   - r-biocmanager
+
+  # R packages used in your scripts
+  - r-argparse
   - bioconductor-bacon
   - bioconductor-biocparallel
-  - r-argparse
-  - r-qqman
-  - r-qcewas
-  - r-caret
-  - r-rmarkdown
-  - r-shiny
   - r-fst
   - r-dofuture
   - r-progress
@@ -31,7 +25,15 @@ dependencies:
   - r-r.utils
   - r-cowplot
   - r-ggplot2
+  - r-qqman
+  - r-qcewas
+  - r-caret
+  - r-rmarkdown
+  - r-shiny
 
-
-
-
+  # Add missing packages 
+  - r-data.table
+  - r-dplyr
+  - r-tibble
+  - r-broom
+  - r-yaml
