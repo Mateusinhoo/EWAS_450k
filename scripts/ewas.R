@@ -111,6 +111,11 @@ if(endsWith(pheno, '.fst')){
     column_to_rownames(var=colnames(.)[1]) # Move the sample IDs to the rownames
 }
 
+# Automatically create sample_subgroup column (customize logic here)
+if (!"sample_subgroup" %in% colnames(pheno)) {
+  pheno$sample_subgroup <- paste0(pheno$cancer_type, "_", pheno$ethnicity)
+}
+
 # Read in methylation data
 if(endsWith(mvals, '.fst')){
   mvals <- read_fst(mvals)  %>% 
