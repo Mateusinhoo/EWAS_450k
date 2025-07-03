@@ -38,11 +38,11 @@ rule run_bacon:
         o_type = OUT_TYPE,
         o_prefix = ASSOC
     output:
-        f"{OUT_DIR}{ASSOC}_{ASSOC}NonNative_ewas_bacon_results{OUT_TYPE}",
-        f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_traces.jpg",
-        f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_posteriors.jpg",
-        f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_fit.jpg",
-        f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_qqs.jpg"
+        f"{OUT_DIR}{ASSOC}_ewas_bacon_results{OUT_TYPE}",
+        f"{OUT_DIR}bacon_plots/{ASSOC}_traces.jpg",
+        f"{OUT_DIR}bacon_plots/{ASSOC}_posteriors.jpg",
+        f"{OUT_DIR}bacon_plots/{ASSOC}_fit.jpg",
+        f"{OUT_DIR}bacon_plots/{ASSOC}_qqs.jpg"
     conda:
         "../envs/ewas.yaml"
     shell:
