@@ -184,8 +184,18 @@ ewas <- function(mvals, pheno){
     # Loop through cpgs in a chunk
     foreach(i = colnames(m.chunk), .verbose = F, .combine= "rbind", .packages = c("vars"), .inorder = F) %dopar% {
       .GlobalEnv$m.chunk <- m.chunk
-      model.base <- paste(colnames(pheno), collapse = " + ")
-      string.formula <- paste0("m.chunk$", i, " ~ ", model.base)
+        
+     # Choose covariates manually
+covariates <- c(assoc_var, "age", "smoking_status", "bmi")
+covariates <- covariates[covariates %in% colnames(pheno)]  # only keep those that exist
+
+if (length(covariates) == 0) {
+  stop("None of the required covariates (assoc_var, age, smoking_status, bmi) found in phenotype data.")
+}
+
+model.base <- paste(covariates, collapse = " + ")
+string.formula <- paste0("m.chunk$", i, " ~ ", model.base)
+
       fit <- glm(formula = string.formula, data = pheno) %>%
         broom::tidy(conf.int = F) %>%
         dplyr::filter(term %in% c(assoc_var)) %>%
