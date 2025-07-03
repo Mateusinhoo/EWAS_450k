@@ -17,7 +17,7 @@ dependencies:
   - r-ggplot2
   - bioconductor-bacon
   
-  # R packages used in your scripts
+  # R packages for the scripts
   - r-argparse
   - bioconductor-bacon
   - bioconductor-biocparallel
@@ -38,8 +38,7 @@ dependencies:
   - r-caret
   - r-rmarkdown
   - r-shiny
-
-  # Add missing packages 
+  - r-r.utils
   - r-data.table
   - r-dplyr
   - r-tibble
