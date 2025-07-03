@@ -206,10 +206,10 @@ if (length(covariates) == 0) {
 model.base <- paste(covariates, collapse = " + ")
 string.formula <- paste0("m.chunk$", i, " ~ ", model.base)
 
-      fit <- glm(formula = string.formula, data = pheno) %>%
-        broom::tidy(conf.int = F) %>%
-        dplyr::filter(term %in% c(assoc_var)) %>%
-        dplyr::mutate(cpgid = i)
+        fit <- glm(formula = string.formula, data = pheno) %>%
+          broom::tidy(conf.int = F) %>%
+          dplyr::filter(grepl(paste0("^", assoc_var), term)) %>%
+          dplyr::mutate(cpgid = i)
       fit
     }
   }
