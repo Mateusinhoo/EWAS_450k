@@ -95,8 +95,9 @@ ann_locations <- fread("annotation_files/EPIC_hg38.tsv.gz")  # CpG positions
 ann_genes <- fread("annotation_files/EPIC_snp_key.tsv.gz")   # Gene annotations
 
 # Ensure CpG ID columns match
-colnames(ann_locations)[1] <- "cpgid"
-colnames(ann_genes)[1] <- "cpgid"
+colnames(ann_locations)[which(colnames(ann_locations) == "probeID")] <- "cpgid"
+colnames(ann_genes)[which(colnames(ann_genes) == "probeID")] <- "cpgid"
+
 
 # Merge annotations
 annotation <- left_join(ann_locations, ann_genes, by = "cpgid")
