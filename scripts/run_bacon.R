@@ -61,6 +61,17 @@ if(filename=="all"){
        cat(paste0("Running BACON for subset: ", filename, "\n"))
 }
 
+# Clean rows with missing or invalid data
+ewas <- ewas %>%
+  filter(
+    is.finite(statistic),
+    is.finite(estimate),
+    is.finite(std.error)
+  )
+
+if (nrow(ewas) == 0) {
+  stop("No valid rows available for BACON analysis after removing NA/NaN/Inf values.")
+}
 
 # Run bacon on tstatistics, effect-sizes, and standard errors
 bc <- bacon(teststatistics = ewas$statistic,

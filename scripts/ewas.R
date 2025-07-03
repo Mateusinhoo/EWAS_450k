@@ -209,6 +209,11 @@ string.formula <- paste0("m.chunk$", i, " ~ ", model.base)
 
 results <- ewas(mvals, pheno)
 
+print("Number of EWAS results:")
+print(nrow(results))
+print("First few rows of results:")
+print(head(results))
+
 # Export results 
 results$n <- nrow(pheno)
 if (stratified == "yes"){
@@ -218,10 +223,9 @@ if (stratified == "yes"){
 }
 
 if (endsWith(filename, ".gz")) {
-  gz <- gzfile(filename, "w")
+  gz <- gzfile(filename, "wb")
   write.csv(results, gz, row.names = FALSE)
   close(gz)
 } else {
   write.csv(results, file = filename, row.names = FALSE)
 }
-
