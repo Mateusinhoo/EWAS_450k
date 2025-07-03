@@ -17,8 +17,7 @@ rule run_combined_ewas:
         "../envs/ewas.yaml"
     shell:
         """
-        export R_PROGRESSR_ENABLE=TRUE 
-        Rscript {input.script} \
+        Rscript -e "Sys.setenv(R_PROGRESSR_ENABLE='TRUE'); source('{input.script}')" \
         --pheno {input.pheno_file} \
         --methyl {input.methyl_file} \
         --assoc {params.assoc_var} \
@@ -29,7 +28,6 @@ rule run_combined_ewas:
         --out-dir {params.o_dir} \
         --out-type {params.o_type}
         """
-
 
 rule run_bacon:
     input:
