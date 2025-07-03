@@ -17,8 +17,7 @@ dependencies:
   - r-ggplot2
   - bioconductor-bacon
   - bioconductor-qcewas
-  - bioconductor-illuminaHumanMethylation450kanno.ilmn12.hg38
-
+  
   # R packages used in your scripts
   - r-argparse
   - bioconductor-bacon
