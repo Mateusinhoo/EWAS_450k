@@ -56,13 +56,13 @@ if (!requireNamespace("QCEWAS", quietly = TRUE)) {
 }
 
 # Load 450k annotation from Bioconductor
-suppressPackageStartupMessages({
-  library(IlluminaHumanMethylation450kanno.ilmn12.hg38)
-})
+# suppressPackageStartupMessages({
+#  library(IlluminaHumanMethylation450kanno.ilmn12.hg38)
+# })
 
-data("Locations")   # CpG positions
-data("Other")       # UCSC and gene context
-data("Manifest")    # Misc info
+# data("Locations")   # CpG positions
+# data("Other")       # UCSC and gene context
+# data("Manifest")    # Misc info
 
 # Convert Locations to a data frame with cpgid column
 ann_locations <- as.data.frame(Locations)
