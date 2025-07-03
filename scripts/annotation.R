@@ -41,6 +41,13 @@ out_type <- args$out_type
 # Read in EWAS summary statistics
 ewas <- fread(results)
 
+# Ensure required Bioconductor annotation package is installed
+if (!requireNamespace("IlluminaHumanMethylation450kanno.ilmn12.hg38", quietly = TRUE)) {
+    if (!requireNamespace("BiocManager", quietly = TRUE))
+        install.packages("BiocManager")
+    BiocManager::install("IlluminaHumanMethylation450kanno.ilmn12.hg38", ask = FALSE)
+}
+
 # Load 450k annotation from Bioconductor
 suppressPackageStartupMessages({
   library(IlluminaHumanMethylation450kanno.ilmn12.hg38)
