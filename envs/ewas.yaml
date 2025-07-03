@@ -8,6 +8,8 @@ dependencies:
   - r-base
   - r-essentials
   - r-biocmanager
+  - r-dplyr
+  - r-tidyverse
 
   # R packages used in your scripts
   - r-argparse
