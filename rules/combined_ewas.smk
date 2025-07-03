@@ -38,11 +38,11 @@ rule run_bacon:
         o_type = OUT_TYPE,
         o_prefix = ASSOC
     output:
-        results = lambda wildcards: f"{OUT_DIR}{ASSOC}_{ASSOC}NonNative_ewas_bacon_results{OUT_TYPE}",
-        traces = lambda wildcards: f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_traces.jpg",
-        posteriors = lambda wildcards: f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_posteriors.jpg",
-        fit = lambda wildcards: f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_fit.jpg",
-        qqs = lambda wildcards: f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_qqs.jpg"
+        f"{OUT_DIR}{ASSOC}_{ASSOC}NonNative_ewas_bacon_results{OUT_TYPE}",
+        f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_traces.jpg",
+        f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_posteriors.jpg",
+        f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_fit.jpg",
+        f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_qqs.jpg"
     conda:
         "../envs/ewas.yaml"
     shell:
