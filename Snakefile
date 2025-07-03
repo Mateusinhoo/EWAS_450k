@@ -28,7 +28,13 @@ if DMR == "yes":
     REGION_FILTER = config["region_filter"]
 
 # Stratified EWAS
-GROUPS = generate_observed_combinations(df=pd.read_csv(config["pheno"]), stratify_cols=config["stratify_variables"])
+if STRATIFIED == "yes":
+    GROUPS = generate_observed_combinations(
+        df=pd.read_csv(config["pheno"]),
+        stratify_cols=config["stratify_variables"]
+    )
+else:
+    GROUPS = []
 
 #---- INPUT & OUTPUT FILES ----#
 # Final output results, stratified or not
