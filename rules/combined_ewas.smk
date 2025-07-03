@@ -36,7 +36,7 @@ rule run_bacon:
     params:
         o_dir = OUT_DIR,
         o_type = OUT_TYPE,
-        o_prefix = ""
+        o_prefix = ASSOC  
     output: 
         bacon_results,
         bacon_plots
