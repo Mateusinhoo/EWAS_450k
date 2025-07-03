@@ -36,10 +36,13 @@ rule run_bacon:
     params:
         o_dir = OUT_DIR,
         o_type = OUT_TYPE,
-        o_prefix = ASSOC  
-    output: 
-        bacon_results,
-        bacon_plots
+        o_prefix = ASSOC
+    output:
+        results = lambda wildcards: f"{OUT_DIR}{ASSOC}_{ASSOC}NonNative_ewas_bacon_results{OUT_TYPE}",
+        traces = lambda wildcards: f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_traces.jpg",
+        posteriors = lambda wildcards: f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_posteriors.jpg",
+        fit = lambda wildcards: f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_fit.jpg",
+        qqs = lambda wildcards: f"{OUT_DIR}bacon_plots/{ASSOC}_{ASSOC}NonNative_qqs.jpg"
     conda:
         "../envs/ewas.yaml"
     shell:
@@ -48,7 +51,5 @@ rule run_bacon:
         --input-file {input.in_file} \
         --out-dir {params.o_dir} \
         --out-prefix {params.o_prefix} \
-        --out-type {params.o_type} \
+        --out-type {params.o_type}
         """
-    
-    
