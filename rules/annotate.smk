@@ -1,27 +1,18 @@
-# Dynamically resolve the correct bacon or meta-analysis input file
-def get_file(wildcards):
-    prefix = config["out_prefix"]
-    assoc = config["association_variable"]
-    out_dir = config["out_directory"]
-    out_type = config["out_type"]
-
-    if config["stratified_ewas"] == "yes":
-        return f"{out_dir}{prefix}_{assoc}_ewas_meta_analysis_results_1.txt"
-    else:
-        return f"{out_dir}{prefix}_{assoc}_ewas_bacon_results{out_type}"
-
 rule add_annotation:
     input: 
         annotation = config["annotation_manifest"],
         snp_key = config["snp_annotation"],
-        in_file = get_file,
+        in_file = lambda wildcards: (
+            f"{config['out_directory']}{config['out_prefix']}_{config['association_variable']}_ewas_meta_analysis_results_1.txt"
+            if config["stratified_ewas"] == "yes"
+            else f"{config['out_directory']}{config['out_prefix']}_{config['association_variable']}_ewas_bacon_results{config['out_type']}"
+        ),
         script = "scripts/annotation.R"
     params:
         o_dir = config["out_directory"],
         strat = config["stratified_ewas"],
         assoc = config["association_variable"],
-        o_type = config["out_type"],
-        prefix = config["out_prefix"]
+        o_type = config["out_type"]
     output: 
         lambda wildcards: f"{config['out_directory']}{config['out_prefix']}_{config['association_variable']}_ewas_annotated_results{config['out_type']}"
     conda:
