@@ -5,21 +5,10 @@ def get_file(wildcards):
         in_file = bacon_results
     return(in_file)
 
-# rule get_annotation_data:
-#     output:
-#         protected("annotation_files/EPIC_hg38.tsv.gz"),
-#         protected("annotation_files/EPIC_snp_key.tsv.gz")
-#     shell:
-#         """
-#         wget https://zhouserver.research.chop.edu/InfiniumAnnotation/20210615/EPIC/EPIC.hg38.manifest.gencode.v36.tsv.gz \
-#         -O annotation_files/EPIC_hg38.tsv.gz
-#         wget https://zhouserver.research.chop.edu/InfiniumAnnotation/20180909/EPIC/EPIC.hg38.commonsnp.tsv.gz \
-#         -O annotation_files/EPIC_snp_key.tsv.gz
-#         """
-
 rule add_annotation:
     input: 
-        rules.get_annotation_data.output,
+        annotation = config["annotation_manifest"],
+        snp_key = config["snp_annotation"],
         in_file = get_file,
         script = "scripts/annotation.R"
     params:
@@ -38,5 +27,7 @@ rule add_annotation:
         --out-dir {params.o_dir} \
         --stratified {params.strat} \
         --assoc {params.assoc} \
-        --out-type {params.o_type}
+        --out-type {params.o_type} \
+        --annotation {input.annotation} \
+        --snp-key {input.snp_key}
         """
