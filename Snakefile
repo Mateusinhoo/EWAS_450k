@@ -16,6 +16,8 @@ PROCESSING_TYPE = config["processing_type"]
 N_WORKERS = config["workers"]
 OUT_DIR = config["out_directory"]
 OUT_TYPE = config["out_type"]
+ANNOTATION_MANIFEST = config["annotation_manifest"]
+SNP_ANNOTATION = config["snp_annotation"]
 PLOTS = ["traces", "posteriors", "fit", "qqs"]
 
 # DMR VARIABLES
