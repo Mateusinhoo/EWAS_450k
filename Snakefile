@@ -71,10 +71,10 @@ rule all:
     input:
         PHENO,
         MVALS,
-        # Use expand directly here
-        *(expand(OUT_DIR + "{group}/{group}_" + ASSOC + "_ewas_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + ASSOC + "_ewas_results" + OUT_TYPE]),
-        *(expand(OUT_DIR + "{group}/{group}_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + ASSOC + "_ewas_bacon_results" + OUT_TYPE]),
-        *(expand(OUT_DIR + "{group}/bacon_plots/{group}_" + ASSOC + "_{plot}.jpg", group=GROUPS, plot=PLOTS) if STRATIFIED == "yes" else expand(OUT_DIR + "bacon_plots/" + ASSOC + "_{plot}.jpg", plot=PLOTS)),
+        # EWAS results
+        *(expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE]),
+        *(expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE]),
+        *(expand(OUT_DIR + "{group}/bacon_plots/{group}_" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", group=GROUPS, plot=PLOTS) if STRATIFIED == "yes" else expand(OUT_DIR + "bacon_plots/" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", plot=PLOTS)),
         meta_analysis_results if STRATIFIED == "yes" else [],
         annotated_results,
         manhattan_qq_plot,
