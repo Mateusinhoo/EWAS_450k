@@ -1,68 +1,90 @@
 default_container: "docker://rocker/tidyverse:4.3.1"
 
-import yaml
 import pandas as pd
 from helper_fxns import generate_observed_combinations
+configfile: "config.yml"
 
-with open("config_all.yml", "r") as f:
-    configs = yaml.safe_load(f)["configs"]
-
-SAMPLES = [c.replace(".yml", "").replace("config_", "") for c in configs]
-
-# Define plots
+#----SET VARIABLES----#
+## EWAS VARIABLES
+PHENO = config["pheno"]
+MVALS = config["mvals"]
+ASSOC = config["association_variable"]
+STRATIFIED = config["stratified_ewas"]
+STRAT_VARS = config["stratify_variables"]
+CHUNK_SIZE = config["chunk_size"]
+PROCESSING_TYPE = config["processing_type"]
+N_WORKERS = config["workers"]
+OUT_DIR = config["out_directory"]
+OUT_TYPE = config["out_type"]
+OUT_PREFIX = config["out_prefix"]
+ANNOTATION_MANIFEST = config["annotation_manifest"]
+SNP_ANNOTATION = config["snp_annotation"]
 PLOTS = ["traces", "posteriors", "fit", "qqs"]
 
-# Build all expected output paths dynamically
-def get_outputs(sample):
-    with open(f"config_{sample}.yml", "r") as f:
-        cfg = yaml.safe_load(f)
+# DMR VARIABLES
+DMR = config["dmr_analysis"]
+ANNO = config["genome_build"]
 
-    out_prefix = cfg["out_prefix"]
-    out_dir = cfg["out_directory"]
-    assoc = cfg["association_variable"]
-    out_type = cfg["out_type"]
-    stratified = cfg["stratified_ewas"]
-    dmr = cfg.get("dmr_analysis", "no")
+if DMR == "yes":
+    MIN_P = config["min_pvalue"]
+    WIN_SZ = config["window_size"]
+    REGION_FILTER = config["region_filter"]
 
-    # Basic files
-    files = [
-        cfg["pheno"],
-        cfg["mvals"],
-        f"{out_dir}{out_prefix}_{assoc}_ewas_results{out_type}",
-        f"{out_dir}{out_prefix}_{assoc}_ewas_bacon_results{out_type}",
-        f"{out_dir}{out_prefix}_{assoc}_ewas_annotated_results{out_type}",
-        f"{out_dir}{out_prefix}_{assoc}_ewas_manhattan_qq_plots.jpg",
-    ]
+# Stratified EWAS
+if STRATIFIED == "yes":
+    GROUPS = generate_observed_combinations(
+        df=pd.read_csv(config["pheno"]),
+        stratify_cols=config["stratify_variables"]
+    )
+else:
+    GROUPS = []
 
-    files += [f"{out_dir}bacon_plots/{out_prefix}_{assoc}_{plot}.jpg" for plot in PLOTS]
+#---- INPUT & OUTPUT FILES ----#
+# Final output results, stratified or not
+annotated_results = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_annotated_results" + OUT_TYPE
+manhattan_qq_plot = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_manhattan_qq_plots.jpg"
 
-    if stratified == "yes":
-        df = pd.read_csv(cfg["pheno"])
-        groups = generate_observed_combinations(df, cfg["stratify_variables"])
-        for g in groups:
-            files += [
-                f"{out_dir}{g}/{g}_{out_prefix}_{assoc}_ewas_results{out_type}",
-                f"{out_dir}{g}/{g}_{out_prefix}_{assoc}_ewas_bacon_results{out_type}",
-            ]
-            files += [f"{out_dir}{g}/bacon_plots/{g}_{out_prefix}_{assoc}_{plot}.jpg" for plot in PLOTS]
-        files.append(f"{out_dir}{out_prefix}_{assoc}_ewas_meta_analysis_results_1.txt")
+# Combined (not stratified) EWAS outputs
+raw_results = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE
+bacon_results = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE
+bacon_plots = expand(OUT_DIR + "bacon_plots/" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", plot=PLOTS)
 
-    if dmr == "yes":
-        files += [
-            f"{out_dir}{out_prefix}_{assoc}_ewas_annotated_results.bed",
-            f"{out_dir}dmr/{out_prefix}_{assoc}_ewas.acf.txt",
-            f"{out_dir}dmr/{out_prefix}_{assoc}_ewas.args.txt",
-            f"{out_dir}dmr/{out_prefix}_{assoc}_ewas.fdr.bed.gz",
-            f"{out_dir}dmr/{out_prefix}_{assoc}_ewas.regions.bed.gz",
-            f"{out_dir}dmr/{out_prefix}_{assoc}_ewas.slk.bed.gz",
-        ]
+# Stratified EWAS outputs
+strat_raw_results = expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE, group=GROUPS)
+strat_bacon_results = expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE, group=GROUPS)
+strat_bacon_plots = expand(OUT_DIR + "{group}/bacon_plots/{group}_" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", group=GROUPS, plot=PLOTS)
+meta_analysis_results = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_meta_analysis_results_1.txt"
 
-    return files
+# DMR outputs
+results_bed = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_annotated_results.bed"
+dmr_acf = OUT_DIR + "dmr/" + OUT_PREFIX + "_" + ASSOC + "_ewas.acf.txt"
+dmr_args = OUT_DIR + "dmr/" + OUT_PREFIX + "_" + ASSOC + "_ewas.args.txt"
+dmr_fdr = OUT_DIR + "dmr/" + OUT_PREFIX + "_" + ASSOC + "_ewas.fdr.bed.gz"
+dmr_regions = OUT_DIR + "dmr/" + OUT_PREFIX + "_" + ASSOC + "_ewas.regions.bed.gz"
+dmr_slk = OUT_DIR + "dmr/" + OUT_PREFIX + "_" + ASSOC + "_ewas.slk.bed.gz"
 
-# Rule all combines all outputs from all configs
+dmr_infile = [results_bed]
+dmr_outfiles = [dmr_acf, dmr_args, dmr_fdr, dmr_regions, dmr_slk]
+
+#---- DETERMINE INPUT FILES FOR RULE ALL ----#
 rule all:
     input:
-        sum([get_outputs(s) for s in SAMPLES], [])
+        PHENO,
+        MVALS,
+        # EWAS results
+        *(expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE]),
+        *(expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE]),
+        *(expand(OUT_DIR + "{group}/bacon_plots/{group}_" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", group=GROUPS, plot=PLOTS) if STRATIFIED == "yes" else expand(OUT_DIR + "bacon_plots/" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", plot=PLOTS)),
+        meta_analysis_results if STRATIFIED == "yes" else [],
+        annotated_results,
+        manhattan_qq_plot,
+        *( [results_bed, dmr_acf, dmr_args, dmr_fdr, dmr_regions, dmr_slk] if DMR == "yes" else [] )
+
+#---- BEGIN WORKFLOW ----#
+# rule all:
+#    input:
+#        in_files
+
 
 include: "rules/combined_ewas.smk"
 include: "rules/stratified_ewas.smk"
