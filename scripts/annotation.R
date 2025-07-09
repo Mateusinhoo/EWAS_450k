@@ -62,5 +62,5 @@ if (stratified == "no") {
 }
 
 # Save output
-file_name <- paste0(out_dir, assoc, "_ewas_annotated_results", out_type)
+filename <- paste0(out_dir, out_prefix, "_", assoc, "_ewas_annotated_results", out_type)
 fwrite(ewas, file = file_name)
