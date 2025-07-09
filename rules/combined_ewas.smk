@@ -36,13 +36,13 @@ rule run_bacon:
     params:
         o_dir = OUT_DIR,
         o_type = OUT_TYPE,
-        o_prefix = ASSOC
+        o_prefix = OUT_PREFIX + "_" + ASSOC
     output:
-        f"{OUT_DIR}{ASSOC}_ewas_bacon_results{OUT_TYPE}",
-        f"{OUT_DIR}bacon_plots/{ASSOC}_traces.jpg",
-        f"{OUT_DIR}bacon_plots/{ASSOC}_posteriors.jpg",
-        f"{OUT_DIR}bacon_plots/{ASSOC}_fit.jpg",
-        f"{OUT_DIR}bacon_plots/{ASSOC}_qqs.jpg"
+        f"{OUT_DIR}{OUT_PREFIX}_{ASSOC}_ewas_bacon_results{OUT_TYPE}",
+        f"{OUT_DIR}bacon_plots/{OUT_PREFIX}_{ASSOC}_traces.jpg",
+        f"{OUT_DIR}bacon_plots/{OUT_PREFIX}_{ASSOC}_posteriors.jpg",
+        f"{OUT_DIR}bacon_plots/{OUT_PREFIX}_{ASSOC}_fit.jpg",
+        f"{OUT_DIR}bacon_plots/{OUT_PREFIX}_{ASSOC}_qqs.jpg"
     conda:
         "../envs/ewas.yaml"
     shell:
