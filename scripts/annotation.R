@@ -37,9 +37,6 @@ if ("Probe_ID" %in% colnames(ann_genes)) {
   stop("No valid CpG ID column found in snp_annotation file.")
 }
 
-# Merge annotation data
-annotation <- left_join(ann_locations, ann_genes, by = "cpgid")
-
 # Rename CpG ID column in ann_locations (manifest file)
 if ("probeID" %in% colnames(ann_locations)) {
   ann_locations <- ann_locations %>% dplyr::rename(cpgid = probeID)
@@ -49,6 +46,9 @@ if ("probeID" %in% colnames(ann_locations)) {
   print(colnames(ann_locations))  # For debugging if it fails again
   stop("No valid CpG ID column found in annotation_manifest file.")
 }
+
+# Merge annotation data
+annotation <- left_join(ann_locations, ann_genes, by = "cpgid")
 
 # Merge annotation with EWAS results
 if (stratified == "no") {
