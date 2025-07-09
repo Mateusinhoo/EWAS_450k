@@ -82,7 +82,14 @@ StatQQplot <- ggproto("StatQQplot", Stat,
   }
 )
 
-stat_qqplot <- function(mapping = NULL, data = NULL, geom = "point", position = "identity"
+stat_qqplot <- function(mapping = NULL, data = NULL, geom = "point",
+                        position = "identity", na.rm = FALSE, show.legend = NA, 
+                        inherit.aes = TRUE, ...) {
+  layer(
+    stat = StatQQplot, data = data, mapping = mapping, geom = geom, 
+    position = position, show.legend = show.legend, inherit.aes = inherit.aes,
+    params = list(na.rm = na.rm, ...)
+  )
 }
 
 lambda <- QCEWAS::P_lambda(ewas$Pvalue)
