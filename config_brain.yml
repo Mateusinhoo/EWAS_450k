@@ -23,3 +23,6 @@ out_type: ".csv.gz"
 # Annotation files
 annotation_manifest: "annotation_files/HM450.hg38.manifest.gencode.v36.tsv.gz"
 snp_annotation: "annotation_files/HM450.hg38.snp.tsv.gz"
+
+#Subset condition
+subset_condition: 'cancer_type == "brain"'
