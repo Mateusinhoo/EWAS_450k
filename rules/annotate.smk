@@ -1,9 +1,13 @@
 def get_file(wildcards):
+    prefix = config["out_prefix"]
+    assoc = config["association_variable"]
+    out_dir = config["out_directory"]
+    out_type = config["out_type"]
+
     if config["stratified_ewas"] == "yes":
-        in_file = meta_analysis_results
+        return out_dir + prefix + "_" + assoc + "_ewas_meta_analysis_results_1.txt"
     else:
-        in_file = bacon_results
-    return(in_file)
+        return out_dir + prefix + "_" + assoc + "_ewas_bacon_results" + out_type
 
 rule add_annotation:
     input: 
