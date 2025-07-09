@@ -30,9 +30,23 @@ ewas <- fread(results)
 ann_locations <- fread(annotation_path)
 ann_genes <- fread(snp_key_path)
 
-# Ensure matching column names
-colnames(ann_locations)[which(colnames(ann_locations) == "probeID")] <- "cpgid"
-colnames(ann_genes)[which(colnames(ann_genes) == "probeID")] <- "cpgid"
+# Assume CpG IDs are in "probeID", fallback if needed
+if ("probeID" %in% colnames(ann_locations)) {
+  ann_locations <- ann_locations %>% rename(cpgid = probeID)
+} else if ("IlmnID" %in% colnames(ann_locations)) {
+  ann_locations <- ann_locations %>% rename(cpgid = IlmnID)
+} else {
+  stop("No valid CpG ID column found in annotation_manifest file.")
+}
+
+if ("probeID" %in% colnames(ann_genes)) {
+  ann_genes <- ann_genes %>% rename(cpgid = probeID)
+} else if ("IlmnID" %in% colnames(ann_genes)) {
+  ann_genes <- ann_genes %>% rename(cpgid = IlmnID)
+} else {
+  stop("No valid CpG ID column found in snp_annotation file.")
+}
+
 
 # Merge annotation data
 annotation <- left_join(ann_locations, ann_genes, by = "cpgid")
