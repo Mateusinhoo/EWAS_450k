@@ -66,20 +66,6 @@ dmr_slk = OUT_DIR + "dmr/" + OUT_PREFIX + "_" + ASSOC + "_ewas.slk.bed.gz"
 dmr_infile = [results_bed]
 dmr_outfiles = [dmr_acf, dmr_args, dmr_fdr, dmr_regions, dmr_slk]
 
-#---- DETERMINE INPUT FILES FOR RULE ALL ----#
-rule all:
-    input:
-        PHENO,
-        MVALS,
-        # EWAS results
-        *(expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE]),
-        *(expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE, group=GROUPS) if STRATIFIED == "yes" else [OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE]),
-        *(expand(OUT_DIR + "{group}/bacon_plots/{group}_" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", group=GROUPS, plot=PLOTS) if STRATIFIED == "yes" else expand(OUT_DIR + "bacon_plots/" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", plot=PLOTS)),
-        meta_analysis_results if STRATIFIED == "yes" else [],
-        annotated_results,
-        manhattan_qq_plot,
-        *( [results_bed, dmr_acf, dmr_args, dmr_fdr, dmr_regions, dmr_slk] if DMR == "yes" else [] )
-
 #---- BEGIN WORKFLOW ----#
 # rule all:
 #    input:
