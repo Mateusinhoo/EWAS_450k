@@ -1,8 +1,11 @@
-# Determine input file based on stratification
+# Manually construct expected input/output filenames
+ewas_input_file = config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"]
 if config["stratified_ewas"] == "yes":
-    ewas_input_file = f"{config['out_directory']}{config['out_prefix']}_{config['association_variable']}_ewas_meta_analysis_results_1.txt"
+    ewas_input_file += "_ewas_meta_analysis_results_1.txt"
 else:
-    ewas_input_file = f"{config['out_directory']}{config['out_prefix']}_{config['association_variable']}_ewas_bacon_results{config['out_type']}"
+    ewas_input_file += "_ewas_bacon_results" + config["out_type"]
+
+annotated_output_file = config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_annotated_results" + config["out_type"]
 
 rule add_annotation:
     input: 
@@ -16,7 +19,7 @@ rule add_annotation:
         assoc = config["association_variable"],
         o_type = config["out_type"]
     output: 
-        lambda wildcards: f"{config['out_directory']}{config['out_prefix']}_{config['association_variable']}_ewas_annotated_results{config['out_type']}"
+        annotated_output_file
     conda:
         "../envs/ewas.yaml"
     shell:
