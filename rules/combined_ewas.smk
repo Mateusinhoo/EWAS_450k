@@ -11,7 +11,8 @@ rule run_combined_ewas:
         n_workers = N_WORKERS,
         o_dir = OUT_DIR,
         o_type = OUT_TYPE,
-        o_prefix = OUT_PREFIX  
+        o_prefix = OUT_PREFIX,
+        subset = config["subset_condition"]   # <-- add this
     output: 
         raw_results
     conda:
@@ -28,5 +29,6 @@ rule run_combined_ewas:
         --workers {params.n_workers} \
         --out-dir {params.o_dir} \
         --out-type {params.o_type} \
-        --out-prefix {params.o_prefix}
+        --out-prefix {params.o_prefix} \
+        --subset-condition '{params.subset}'   # <-- add this
         """
