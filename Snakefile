@@ -1,11 +1,16 @@
 default_container: "docker://rocker/tidyverse:4.3.1"
 
 import pandas as pd
+import yaml
 from helper_fxns import generate_observed_combinations
 configfile: "config.yml"
 
+with open("config_all.yml", "r") as f:
+    cfgs = yaml.safe_load(f)["configs"]
+
 #----SET VARIABLES----#
 ## EWAS VARIABLES
+CONFIGS = [load_configfile(c) for c in cfgs]
 PHENO = config["pheno"]
 MVALS = config["mvals"]
 ASSOC = config["association_variable"]
