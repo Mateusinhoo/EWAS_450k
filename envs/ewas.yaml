@@ -21,6 +21,7 @@ dependencies:
   - r-reshape2
   - r-rmarkdown
   - r-shiny
+  - r-optparse
 
   # EWAS-specific
   - bioconductor-bacon
