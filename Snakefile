@@ -42,18 +42,18 @@ else:
 #---- INPUT & OUTPUT FILES ----#
 # Final output results, stratified or not
 annotated_results = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_annotated_results" + OUT_TYPE
-manhattan_qq_plot = OUT_DIR + ASSOC + "_ewas_manhattan_qq_plots.jpg"
+manhattan_qq_plot = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_manhattan_qq_plots.jpg"
 
 # Combined (not stratified) EWAS outputs
-raw_results = OUT_DIR + ASSOC + "_ewas_results" + OUT_TYPE
-bacon_results = OUT_DIR + ASSOC + "_ewas_bacon_results" + OUT_TYPE
-bacon_plots = expand(OUT_DIR + "bacon_plots/" + ASSOC + "_{plot}.jpg", plot=PLOTS)
+raw_results = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE
+bacon_results = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE
+bacon_plots = expand(OUT_DIR + "bacon_plots/" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", plot=PLOTS)
 
 # Stratified EWAS outputs
-strat_raw_results = expand(OUT_DIR + "{group}/{group}_" + ASSOC + "_ewas_results" + OUT_TYPE, group=GROUPS)
-strat_bacon_results = expand(OUT_DIR + "{group}/{group}_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE, group=GROUPS)
-strat_bacon_plots = expand(OUT_DIR + "{group}/bacon_plots/{group}_" + ASSOC + "_{plot}.jpg", group=GROUPS, plot=PLOTS)
-meta_analysis_results = OUT_DIR + ASSOC + "_ewas_meta_analysis_results_1.txt"
+strat_raw_results = expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_results" + OUT_TYPE, group=GROUPS)
+strat_bacon_results = expand(OUT_DIR + "{group}/{group}_" + OUT_PREFIX + "_" + ASSOC + "_ewas_bacon_results" + OUT_TYPE, group=GROUPS)
+strat_bacon_plots = expand(OUT_DIR + "{group}/bacon_plots/{group}_" + OUT_PREFIX + "_" + ASSOC + "_{plot}.jpg", group=GROUPS, plot=PLOTS)
+meta_analysis_results = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_meta_analysis_results_1.txt"
 
 # DMR outputs
 results_bed = OUT_DIR + ASSOC + "_ewas_annotated_results.bed"
