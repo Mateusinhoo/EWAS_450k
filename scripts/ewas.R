@@ -15,7 +15,6 @@ suppressPackageStartupMessages({
     library(tibble)
     library(tictoc)
     library(cli)
-    library(yaml)
 })
 
 # Source functions from outside scripts
@@ -26,78 +25,22 @@ source("scripts/fxns/chunk_fxns.R")
 ################################################################################################################################
 # Define command line arguments
 parser <- argparse::ArgumentParser(description="Script for running EWAS")
-parser$add_argument("--pheno",
-                    required=TRUE,
-                    help="Path or URL to phenotype data [samples, phenotypes] with the first column being sample identifiers. \n
-                    Acceptable formates include CSV, Jay, XLSX, and plain text. \n
-                    Data can also be inside an archive such as .tar, .gz, .zip, .gz2, or .tgz .")
-parser$add_argument("--methyl",
-                    required=TRUE, 
-                    help="Path or URL to methylation data [samples, CpGs] with the first column being sample identifiers. \n
-                    Acceptable formates include CSV, Jay, XLSX, and plain text. \n
-                    Data can also be inside an archive such as .tar, .gz, .zip, .gz2, or .tgz .")
-parser$add_argument("--assoc", 
-                    required=TRUE,
-                    type="character", 
-                    nargs=1, 
-                    help="Variable to perform association with.")
-parser$add_argument('--stratified',
-                    choices=c("yes", "no"), 
-                    default="no",
-                    help="Stratified analysis: yes or no")
-parser$add_argument("--chunk-size", 
-                    type="integer", 
-                    nargs="?", 
-                    const=1000, 
-                    default=1000, 
-                    help="number of CpGs per chunk.")
-parser$add_argument('--processing-type', '-pt',
-                    type="character",
-                    nargs="?",
-                    const="sequential",
-                    default="sequential",
-                    choices=c("sequential", "multisession", "multicore", "cluster"),
-                    help="Parallelization type: sequential (default), multisession, multicore, or cluster")
-parser$add_argument('--workers', 
-                    type="integer", 
-                    nargs="?", 
-                    const=1, 
-                    default=1, 
-                    help="Number of processes to run in parallel")
-parser$add_argument('--out-dir', 
-                    type="character",
-                    nargs="?",                    
-                    const="~/", 
-                    default="~/",  
-                    help="Path to output directory")
-parser$add_argument('--out-type', 
-                    type="character",
-                    choices=c(".csv", ".csv.gz"), 
-                    nargs="?",                    
-                    const=".csv",
-                    default=".csv",  
-                    help="Output file type: CSV or CSV.GZ") 
-parser$add_argument('--out-prefix',
-                    type="character",
-                    nargs="?",
-                    const="all",
-                    default="all",
-                    help="Prefix for output files")       
+parser$add_argument("--pheno", required=TRUE, help="Path to phenotype data")
+parser$add_argument("--methyl", required=TRUE, help="Path to methylation data")
+parser$add_argument("--assoc", required=TRUE, type="character", help="Association variable")
+parser$add_argument('--stratified', choices=c("yes", "no"), default="no", help="Stratified analysis: yes or no")
+parser$add_argument("--chunk-size", type="integer", default=1000, help="Number of CpGs per chunk")
+parser$add_argument('--processing-type', '-pt', type="character", default="sequential", choices=c("sequential", "multisession", "multicore", "cluster"), help="Parallelization type")
+parser$add_argument('--workers', type="integer", default=1, help="Number of parallel workers")
+parser$add_argument('--out-dir', type="character", default="~/", help="Output directory")
+parser$add_argument('--out-type', type="character", choices=c(".csv", ".csv.gz"), default=".csv", help="Output file type")
+parser$add_argument('--out-prefix', type="character", default="all", help="Output prefix")
+parser$add_argument('--subset-condition', type="character", default=NULL, help="Subset condition like 'cancer_type == \"brain\"'")
 
-# Load optional config if exists
-if (file.exists("config.yml")) {
-  config <- yaml::read_yaml("config.yml")
-  
-  if (!is.null(config$subset_condition)) {
-    message("Subsetting phenotype data using: ", config$subset_condition)
-    pheno <- subset(pheno, eval(parse(text = config$subset_condition)))
-  }
-}
-
-# parse arguments
+# Parse arguments
 args <- parser$parse_args()
-pheno <- args$pheno
-mvals <- args$methyl
+pheno_path <- args$pheno
+mvals_path <- args$methyl
 assoc_var <- args$assoc
 stratified <- args$stratified
 chunk_size <- args$chunk_size
@@ -106,130 +49,97 @@ n_workers <- args$workers
 out_dir <- args$out_dir
 out_type <- args$out_type
 out_prefix <- args$out_prefix
+subset_condition <- args$`subset-condition`
 
-# Set number of threads to use if using fst to read/write data
+# Set number of threads for fst
 threads_fst(nr_of_threads = n_workers)
 
 ####################################################################################################
 #                                   READ IN DATA                                                   #
 ####################################################################################################
-# Read in the phenotype data
-if(endsWith(pheno, '.fst')){
-  pheno <- read_fst(pheno)  %>% 
-    column_to_rownames(var=colnames(.)[1])
+# Read phenotype
+if (endsWith(pheno_path, ".fst")) {
+  pheno <- read_fst(pheno_path) %>% column_to_rownames(var=colnames(.)[1])
 } else {
-  pheno <- fread(pheno) %>% 
-    column_to_rownames(var=colnames(.)[1])
+  pheno <- fread(pheno_path) %>% column_to_rownames(var=colnames(.)[1])
 }
 
-# Subset AFTER loading pheno
-if (file.exists("config.yml")) {
-  config <- yaml::read_yaml("config.yml")
-  if (!is.null(config$subset_condition)) {
-    message("Subsetting phenotype data using: ", config$subset_condition)
-    pheno <- subset(pheno, eval(parse(text = config$subset_condition)))
-  }
+# Apply subset condition if provided
+if (!is.null(subset_condition)) {
+  message("Subsetting phenotype data using: ", subset_condition)
+  pheno <- subset(pheno, eval(parse(text = subset_condition)))
 }
 
-# Automatically create sample_subgroup column
+# Create sample_subgroup if missing
 if (!"sample_subgroup" %in% colnames(pheno)) {
   pheno$sample_subgroup <- paste0(pheno$cancer_type, "_", pheno$ethnicity)
 }
-
-# Ensure it's treated as a categorical variable
 if (assoc_var == "sample_subgroup") {
   pheno$sample_subgroup <- factor(pheno$sample_subgroup)
 }
 
-# Read in methylation data
-if(endsWith(mvals, '.fst')){
-  mvals <- read_fst(mvals)  %>% 
-    column_to_rownames(var=colnames(.)[1]) # Move the sample IDs to the rownames
+# Read methylation
+if (endsWith(mvals_path, ".fst")) {
+  mvals <- read_fst(mvals_path) %>% column_to_rownames(var=colnames(.)[1])
 } else {
-  mvals <- fread(mvals) %>% 
-    column_to_rownames(var=colnames(.)[1]) # Move the sample IDs to the rownames
+  mvals <- fread(mvals_path) %>% column_to_rownames(var=colnames(.)[1])
 }
 
 ####################################################################################################
 #                                     CHECK DATA                                                   #
 ####################################################################################################
-
-# Check that the association variable exists in the phenotype data
-missing_vars <- setdiff(assoc_var, colnames(pheno))
-if (length(missing_vars) > 0) {
-    stop(paste("The following association variable(s) do not exist in the phenotype data:", paste(missing_vars, collapse = ", ")))
-    # If the variable does exist in the phenotype data, set the variable as the first column
-}else{
-    pheno <- pheno %>% relocate(all_of(assoc_var))
+if (!(assoc_var %in% colnames(pheno))) {
+  stop(paste("Association variable", assoc_var, "not found in phenotype data."))
+} else {
+  pheno <- pheno %>% relocate(all_of(assoc_var))
 }
-
 
 ####################################################################################################
 #                                      CHUNK DATA                                                  #
 ####################################################################################################
-
-# Create a list of cpg.chunks from a vector of all the CpGs to be tested, where each cpg.chunk is a list with n=chunk_size CpGs.
-# If the total number of CpGs is not perfectly divisible by chunk_size, then the last cpg.chunk will have a length equal to the remainder. 
 cpgs <- cpg.chunks(chunk_size, colnames(mvals))
 mvals <- chunk.df(mvals, cpgs)
 
-
-################################################################################################################################
-#                                       LINEAR REGRESSION ANALYSIS                                                             # 
-################################################################################################################################
-# Set paramaters for processing the data sequentially (default) or in parallel.
+####################################################################################################
+#                              LINEAR REGRESSION ANALYSIS                                          #
+####################################################################################################
 registerDoFuture()
-n.workers = n_workers
-if(pt=="sequential"){
-    plan(strategy = pt)
-    cat("Processing run sequentially. \n")
-}else{
-    plan(strategy = pt, workers = n.workers)
-    options(future.globals.maxSize= +Inf)
-    cat("Asynchronous parallel processing using", pt, "with", n.workers, "worker(s). \n")
+if (pt == "sequential") {
+  plan(strategy = pt)
+  cat("Processing run sequentially.\n")
+} else {
+  plan(strategy = pt, workers = n_workers)
+  options(future.globals.maxSize = +Inf)
+  cat("Asynchronous parallel processing using", pt, "with", n_workers, "worker(s).\n")
 }
 
 cat("Starting EWAS: ", out_prefix, "\n")
-
-# Start timer 
 tic()
-# Create progress bar
 handlers(global = TRUE)
-if (interactive() == TRUE) {
-  handlers(list(
-    handler_progress(format = "[:bar] :percent ELAPSED::elapsed, ETA::eta")
-  ))
+if (interactive()) {
+  handlers(list(handler_progress(format = "[:bar] :percent ELAPSED::elapsed, ETA::eta")))
 } else {
   handlers("cli")
   options(cli.progress_handlers = "progressr")
 }
 
-ewas <- function(mvals, pheno){
+ewas <- function(mvals, pheno) {
   tic()
   p <- progressor(along = 1:length(mvals))
-  # Loop through chunks
-  results <- foreach(ii = 1:length(mvals), .verbose = F, .combine = "rbind", .packages = c("vars"), .inorder = T) %dopar% {
-    m.chunk <- mvals[[ii]]    
+  results <- foreach(ii = 1:length(mvals), .combine = "rbind", .packages = c("vars")) %dopar% {
+    m.chunk <- mvals[[ii]]
     p()
-    # Loop through cpgs in a chunk
-    foreach(i = colnames(m.chunk), .verbose = F, .combine= "rbind", .packages = c("vars"), .inorder = F) %dopar% {
+    foreach(i = colnames(m.chunk), .combine = "rbind", .packages = c("vars")) %dopar% {
       .GlobalEnv$m.chunk <- m.chunk
-        
-     # Choose covariates manually
-covariates <- c(assoc_var, "age", "smoking_status", "bmi")
-covariates <- covariates[covariates %in% colnames(pheno)]  # only keep those that exist
-
-if (length(covariates) == 0) {
-  stop("None of the required covariates (assoc_var, age, smoking_status, bmi) found in phenotype data.")
-}
-
-model.base <- paste(covariates, collapse = " + ")
-string.formula <- paste0("m.chunk$", i, " ~ ", model.base)
-
-        fit <- glm(formula = string.formula, data = pheno) %>%
-          broom::tidy(conf.int = F) %>%
-          dplyr::filter(grepl(paste0("^", assoc_var), term)) %>%
-          dplyr::mutate(cpgid = i)
+      covariates <- c(assoc_var, "age", "smoking_status", "bmi")
+      covariates <- covariates[covariates %in% colnames(pheno)]
+      if (length(covariates) == 0) stop("None of the covariates (assoc_var, age, smoking_status, bmi) found in phenotype data.")
+      model.base <- paste(covariates, collapse = " + ")
+      string.formula <- paste0("m.chunk$", i, " ~ ", model.base)
+      fit <- glm(formula = string.formula, data = pheno) %>%
+        broom::tidy(conf.int = FALSE) %>%
+        dplyr::filter(grepl(paste0("^", assoc_var), term)) %>%
+        dplyr::mutate(cpgid = i)
       fit
     }
   }
@@ -244,9 +154,8 @@ print(nrow(results))
 print("First few rows of results:")
 print(head(results))
 
-# Export results 
+# Save results
 filename <- paste0(out_dir, out_prefix, "_", assoc_var, "_ewas_results", out_type)
-
 if (endsWith(filename, ".gz")) {
   gz <- gzfile(filename, "wb")
   write.csv(results, gz, row.names = FALSE)
