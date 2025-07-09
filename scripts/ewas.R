@@ -236,12 +236,7 @@ print("First few rows of results:")
 print(head(results))
 
 # Export results 
-results$n <- nrow(pheno)
-if (stratified == "yes"){
-    filename <- paste0(out_dir, out_prefix, "_", assoc_var, "_ewas_results", out_type)
-} else{
-    filename <- paste0(out_dir, assoc_var, "_ewas_results", out_type)
-}
+filename <- paste0(out_dir, out_prefix, "_", assoc_var, "_ewas_results", out_type)
 
 if (endsWith(filename, ".gz")) {
   gz <- gzfile(filename, "wb")
