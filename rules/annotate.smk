@@ -17,7 +17,8 @@ rule add_annotation:
         o_dir = config["out_directory"],
         strat = config["stratified_ewas"],
         assoc = config["association_variable"],
-        o_type = config["out_type"]
+        o_type = config["out_type"],
+        out_prefix = config["out_prefix"]
     output: 
         annotated_output_file
     conda:
@@ -31,5 +32,6 @@ rule add_annotation:
         --assoc {params.assoc} \
         --out-type {params.o_type} \
         --annotation {input.annotation} \
-        --snp-key {input.snp_key}
+        --snp-key {input.snp_key} \
+        --out-prefix {params.out_prefix}
         """
