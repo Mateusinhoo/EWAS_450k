@@ -1,46 +1,38 @@
 name: ewas
 channels:
-  - bioconda
   - conda-forge
-  - r
-  - nodefaults
+  - bioconda
+  - defaults  
+
 dependencies:
   - r-base
   - r-essentials
   - r-biocmanager
+  - r-data.table
   - r-dplyr
   - r-tidyverse
   - r-tibble
-  - r-base
-  - r-data.table
-  - r-dplyr
   - r-ggplot2
-  - bioconductor-bacon
-  
-  # R packages for the scripts
+  - r-broom
   - r-argparse
+  - r-yaml
+  - r-cli
+  - r-cowplot
+  - r-reshape2
+  - r-rmarkdown
+  - r-shiny
+
+  # EWAS-specific
   - bioconductor-bacon
   - bioconductor-biocparallel
   - r-fst
   - r-dofuture
+  - r-foreach
   - r-progress
   - r-progressr
-  - r-foreach
   - r-vars
   - r-tictoc
-  - r-cli
-  - r-reshape2
   - r-r.utils
-  - r-cowplot
-  - r-ggplot2
   - r-qqman
-  - r-qcewas
   - r-caret
-  - r-rmarkdown
-  - r-shiny
-  - r-r.utils
-  - r-data.table
-  - r-dplyr
-  - r-tibble
-  - r-broom
-  - r-yaml
+  - r-qcewas
