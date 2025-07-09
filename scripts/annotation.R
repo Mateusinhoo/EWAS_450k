@@ -14,9 +14,11 @@ parser$add_argument('--assoc', required=TRUE, type="character", help="Associatio
 parser$add_argument('--out-type', type="character", choices=c(".csv", ".csv.gz"), default=".csv", help="Output file type")
 parser$add_argument('--annotation', required=TRUE, help="Path to manifest annotation file")
 parser$add_argument('--snp-key', required=TRUE, help="Path to SNP annotation file")
+parser$add_argument('--out-prefix', type="character", default="all", help="Prefix for output files")
 
 # Parse arguments
 args <- parser$parse_args()
+out_prefix <- args$out_prefix
 results <- args$`input_file`
 out_dir <- args$`out_dir`
 stratified <- args$`stratified`
