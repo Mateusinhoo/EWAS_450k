@@ -41,7 +41,7 @@ else:
 
 #---- INPUT & OUTPUT FILES ----#
 # Final output results, stratified or not
-annotated_results = OUT_DIR + ASSOC + "_ewas_annotated_results" + OUT_TYPE
+annotated_results = OUT_DIR + OUT_PREFIX + "_" + ASSOC + "_ewas_annotated_results" + OUT_TYPE
 manhattan_qq_plot = OUT_DIR + ASSOC + "_ewas_manhattan_qq_plots.jpg"
 
 # Combined (not stratified) EWAS outputs
