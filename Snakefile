@@ -62,7 +62,7 @@ def get_outputs(sample):
 # Rule all combines all outputs from all configs
 rule all:
     input:
-        expand(get_outputs, sample=SAMPLES)
+        sum([get_outputs(s) for s in SAMPLES], [])
 
 include: "rules/combined_ewas.smk"
 include: "rules/stratified_ewas.smk"
