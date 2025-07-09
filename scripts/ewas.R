@@ -15,6 +15,7 @@ suppressPackageStartupMessages({
     library(tibble)
     library(tictoc)
     library(cli)
+    library(yaml)
 })
 
 # Source functions from outside scripts
@@ -81,7 +82,17 @@ parser$add_argument('--out-prefix',
                     nargs="?",
                     const="all",
                     default="all",
-                    help="Prefix for output files")                       
+                    help="Prefix for output files")       
+
+# Load optional config if exists
+if (file.exists("config.yml")) {
+  config <- yaml::read_yaml("config.yml")
+  
+  if (!is.null(config$subset_condition)) {
+    message("Subsetting phenotype data using: ", config$subset_condition)
+    pheno <- subset(pheno, eval(parse(text = config$subset_condition)))
+  }
+}
 
 # parse arguments
 args <- parser$parse_args()
