@@ -5,17 +5,17 @@ def get_file(wildcards):
         in_file = bacon_results
     return(in_file)
 
-rule get_annotation_data:
-    output:
-        protected("annotation_files/EPIC_hg38.tsv.gz"),
-        protected("annotation_files/EPIC_snp_key.tsv.gz")
-    shell:
-        """
-        wget https://zhouserver.research.chop.edu/InfiniumAnnotation/20210615/EPIC/EPIC.hg38.manifest.gencode.v36.tsv.gz \
-        -O annotation_files/EPIC_hg38.tsv.gz
-        wget https://zhouserver.research.chop.edu/InfiniumAnnotation/20180909/EPIC/EPIC.hg38.commonsnp.tsv.gz \
-        -O annotation_files/EPIC_snp_key.tsv.gz
-        """
+# rule get_annotation_data:
+#     output:
+#         protected("annotation_files/EPIC_hg38.tsv.gz"),
+#         protected("annotation_files/EPIC_snp_key.tsv.gz")
+#     shell:
+#         """
+#         wget https://zhouserver.research.chop.edu/InfiniumAnnotation/20210615/EPIC/EPIC.hg38.manifest.gencode.v36.tsv.gz \
+#         -O annotation_files/EPIC_hg38.tsv.gz
+#         wget https://zhouserver.research.chop.edu/InfiniumAnnotation/20180909/EPIC/EPIC.hg38.commonsnp.tsv.gz \
+#         -O annotation_files/EPIC_snp_key.tsv.gz
+#         """
 
 rule add_annotation:
     input: 
