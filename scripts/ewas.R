@@ -116,10 +116,19 @@ threads_fst(nr_of_threads = n_workers)
 # Read in the phenotype data
 if(endsWith(pheno, '.fst')){
   pheno <- read_fst(pheno)  %>% 
-    column_to_rownames(var=colnames(.)[1]) # Move the sample IDs to the rownames
+    column_to_rownames(var=colnames(.)[1])
 } else {
   pheno <- fread(pheno) %>% 
-    column_to_rownames(var=colnames(.)[1]) # Move the sample IDs to the rownames
+    column_to_rownames(var=colnames(.)[1])
+}
+
+# Subset AFTER loading pheno
+if (file.exists("config.yml")) {
+  config <- yaml::read_yaml("config.yml")
+  if (!is.null(config$subset_condition)) {
+    message("Subsetting phenotype data using: ", config$subset_condition)
+    pheno <- subset(pheno, eval(parse(text = config$subset_condition)))
+  }
 }
 
 # Automatically create sample_subgroup column
