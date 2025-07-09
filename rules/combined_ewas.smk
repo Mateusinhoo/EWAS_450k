@@ -10,7 +10,8 @@ rule run_combined_ewas:
         pt = PROCESSING_TYPE,
         n_workers = N_WORKERS,
         o_dir = OUT_DIR,
-        o_type = OUT_TYPE
+        o_type = OUT_TYPE,
+        o_prefix = OUT_PREFIX  
     output: 
         raw_results
     conda:
@@ -26,7 +27,8 @@ rule run_combined_ewas:
         --processing-type {params.pt} \
         --workers {params.n_workers} \
         --out-dir {params.o_dir} \
-        --out-type {params.o_type}
+        --out-type {params.o_type} \
+        --out-prefix {params.o_prefix}
         """
 
 rule run_bacon:
