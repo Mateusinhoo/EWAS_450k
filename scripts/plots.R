@@ -107,5 +107,5 @@ left.panel <- plot_grid(NULL, qq.plot, labels = c("B", ""), label_size = 22, nco
 full.plot <- plot_grid(manh.plot, left.panel, labels = c("A", ""), ncol = 2, rel_widths = c(2.5, 1), label_size = 22)
 
 # Save
-filename <- file.path(out_dir, paste0(out_prefix, "_", assoc, "_manhattan_qq_plots.jpg"))
+filename <- file.path(out_dir, paste0(out_prefix, "_", assoc, "_ewas_manhattan_qq_plots.jpg"))
 ggsave(filename, plot = full.plot, width = 32, height = 12, units = "cm")
