@@ -5,7 +5,8 @@ rule plot_results:
     params:
         o_dir = OUT_DIR,
         strat = STRATIFIED,
-        assoc = ASSOC
+        assoc = ASSOC,
+        prefix = OUT_PREFIX
     output: 
         manhattan_qq_plot
     conda:
@@ -16,5 +17,6 @@ rule plot_results:
         --input-file {input.in_file} \
         --out-dir {params.o_dir} \
         --stratified {params.strat} \
-        --assoc {params.assoc}
+        --assoc {params.assoc} \
+        --out-prefix {params.prefix}
         """
