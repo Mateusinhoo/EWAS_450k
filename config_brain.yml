@@ -25,5 +25,5 @@ out_prefix: "brain"
 annotation_manifest: "annotation_files/HM450.hg38.manifest.gencode.v36.tsv.gz"
 snp_annotation: "annotation_files/HM450.hg38.snp.tsv.gz"
 
-#Subset Condition
+# Subset Condition
 subset_condition: 'cancer_type == "brain"'
