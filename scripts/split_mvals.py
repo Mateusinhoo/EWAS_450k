@@ -1,23 +1,26 @@
 import pandas as pd
 
-# Load methylation matrix
+# Load full methylation matrix (CpGs as rows, samples as columns)
 mvals = pd.read_csv("data/mvals.csv.gz", index_col=0)
 
-# Load phenotype files
+# Transpose so samples become rows, CpGs are columns
+mvals = mvals.transpose()
+
+# Load phenotypes
 pheno_blood = pd.read_csv("data/pheno_blood.csv")
 pheno_brain = pd.read_csv("data/pheno_brain.csv")
 
-# Get sample IDs
-samples_blood = pheno_blood['sampleID'].tolist()
-samples_brain = pheno_brain['sampleID'].tolist()
+# Sample IDs from pheno files
+blood_samples = pheno_blood["sampleID"].tolist()
+brain_samples = pheno_brain["sampleID"].tolist()
 
-# Filter columns (samples) in mvals
-mvals_blood = mvals[samples_blood]
-mvals_brain = mvals[samples_brain]
+# Subset rows (samples)
+mvals_blood = mvals.loc[blood_samples]
+mvals_brain = mvals.loc[brain_samples]
 
-# Save output
-mvals_blood.to_csv("data/mvals_blood.csv.gz", compression='gzip')
-mvals_brain.to_csv("data/mvals_brain.csv.gz", compression='gzip')
+# Transpose back so CpGs are rows again and save
+mvals_blood.transpose().to_csv("data/mvals_blood.csv.gz", compression="gzip")
+mvals_brain.transpose().to_csv("data/mvals_brain.csv.gz", compression="gzip")
 
-print(f"Saved blood: {mvals_blood.shape}")
-print(f"Saved brain: {mvals_brain.shape}")
+print("Saved blood methylation:", mvals_blood.shape, "→ data/mvals_blood.csv.gz")
+print("Saved brain methylation:", mvals_brain.shape, "→ data/mvals_brain.csv.gz")
