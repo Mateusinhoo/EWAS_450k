@@ -1,16 +1,22 @@
 import pandas as pd
 
-# Load phenotypes
-pheno_blood = pd.read_csv("data/pheno_blood.csv")
-pheno_brain = pd.read_csv("data/pheno_brain.csv")
+# Load full methylation matrix
+mvals = pd.read_csv("data/mvals.csv.gz", index_col=0).transpose()
 
-# Load mvals normally (samples are in rows)
-mvals = pd.read_csv("data/mvals.csv.gz")
+# Load full phenotype
+pheno = pd.read_csv("data/pheno.csv")
 
-# Filter to blood and brain samples
-mvals_blood = mvals[mvals["sampleID"].isin(pheno_blood["sampleID"])]
-mvals_brain = mvals[mvals["sampleID"].isin(pheno_brain["sampleID"])]
-
-# Save each split
-mvals_blood.to_csv("data/mvals_blood.csv.gz", index=False)
-mvals_brain.to_csv("data/mvals_brain.csv.gz", index=False)
+# Split by cancer type
+for tissue in ["blood", "brain"]:
+    pheno_subset = pheno[pheno["cancer_type"] == tissue]
+    sample_ids = pheno_subset["sampleID"].tolist()
+    
+    # Subset methylation matrix to matching samples
+    mvals_subset = mvals.loc[sample_ids]
+    
+    # Transpose back so CpGs are rows and samples are columns
+    mvals_subset = mvals_subset.transpose()
+    
+    # Save split methylation matrix and phenotype table
+    mvals_subset.to_csv(f"data/mvals_{tissue}.csv.gz")
+    pheno_subset.to_csv(f"data/pheno_{tissue}.csv", index=False)
