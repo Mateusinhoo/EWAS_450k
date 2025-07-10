@@ -1,6 +1,6 @@
 # Input data
-mvals: "data/mvals.csv.gz"
-pheno: "data/pheno.csv"
+mvals: "data/mvals_blood.csv.gz"
+pheno: "data/pheno_blood.csv"
 
 # EWAS model
 association_variable: "ethnicity"
@@ -24,6 +24,3 @@ out_prefix: "blood"
 # Annotation files
 annotation_manifest: "annotation_files/HM450.hg38.manifest.gencode.v36.tsv.gz"
 snp_annotation: "annotation_files/HM450.hg38.snp.tsv.gz"
-
-# Subset Condition
-subset_condition: 'cancer_type == "blood"'
