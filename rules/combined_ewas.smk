@@ -12,7 +12,6 @@ rule run_combined_ewas:
         o_dir = OUT_DIR,
         o_type = OUT_TYPE,
         o_prefix = OUT_PREFIX,
-        subset = config["subset_condition"]   # <-- add this
     output: 
         raw_results
     conda:
@@ -30,5 +29,4 @@ rule run_combined_ewas:
         --out-dir {params.o_dir} \
         --out-type {params.o_type} \
         --out-prefix {params.o_prefix} \
-        --subset-condition '{params.subset}'   # <-- add this
         """
