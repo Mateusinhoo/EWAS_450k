@@ -1,11 +1,6 @@
 sampleID,cancer_type,ethnicity,sex,age,bmi,smoking_status
-sample_1,brain,Native,M,54,26.8,current
-sample_2,brain,NonNative,F,61,23.4,never
 sample_3,blood,Native,M,47,28.5,former
 sample_4,blood,NonNative,F,52,30.1,current
-sample_5,brain,Native,F,39,22.7,never
 sample_6,blood,NonNative,M,60,27.3,current
-sample_7,brain,Native,F,45,25.0,former
 sample_8,blood,Native,M,33,31.2,never
 sample_9,blood,NonNative,F,58,29.6,former
-sample_10,brain,NonNative,F,50,24.1,current
