@@ -1,21 +1,20 @@
 import pandas as pd
 
-# Read the full methylation matrix (samples might be in rows, CpGs in columns)
-mvals = pd.read_csv("data/mvals.csv.gz", index_col=0)
+# Load the full M-values matrix
+mvals = pd.read_csv("data/mvals.csv.gz", index_col=0).transpose()
 
-# Transpose so samples are columns
-mvals = mvals.T
-
-# Split brain
-pheno_brain = pd.read_csv("data/pheno_brain.csv")
-samples_brain = pheno_brain["sampleID"].tolist()
-mvals_brain = mvals[samples_brain].T
-mvals_brain.to_csv("data/mvals_brain.csv.gz", compression="gzip")
-
-# Split blood
+# Load updated phenotype files
 pheno_blood = pd.read_csv("data/pheno_blood.csv")
-samples_blood = pheno_blood["sampleID"].tolist()
-mvals_blood = mvals[samples_blood].T
-mvals_blood.to_csv("data/mvals_blood.csv.gz", compression="gzip")
+pheno_brain = pd.read_csv("data/pheno_brain.csv")
 
-print(" Done splitting methylation file into brain and blood.")
+# Extract sample IDs
+samples_blood = pheno_blood["sampleID"].tolist()
+samples_brain = pheno_brain["sampleID"].tolist()
+
+# Subset the mvals
+mvals_blood = mvals.loc[samples_blood].transpose()
+mvals_brain = mvals.loc[samples_brain].transpose()
+
+# Save split files
+mvals_blood.to_csv("data/mvals_blood.csv.gz", compression="gzip")
+mvals_brain.to_csv("data/mvals_brain.csv.gz", compression="gzip")
