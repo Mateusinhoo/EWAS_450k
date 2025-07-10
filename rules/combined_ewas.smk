@@ -20,7 +20,7 @@ rule run_combined_ewas:
         export R_PROGRESSR_ENABLE=TRUE 
         Rscript {input.script} \
         --pheno {input.pheno_file} \
-        --methyl {input.methyl_file} \
+        --mvals {input.methyl_file} \
         --assoc {params.assoc_var} \
         --stratified {params.stratified} \
         --chunk-size {params.cs} \
