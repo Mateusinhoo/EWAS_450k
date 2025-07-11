@@ -1,5 +1,5 @@
 rule make_results_dir:
     output:
-        directory(OUT_DIR)
+        "results/"
     shell:
         "mkdir -p {output}"
