@@ -69,7 +69,7 @@ dmr_outfiles = [dmr_acf, dmr_args, dmr_fdr, dmr_regions, dmr_slk]
 #---- DETERMINE INPUT FILES FOR RULE ALL ----#
 rule all:
     input:
-        OUT_DIR,
+        "results/",
         PHENO,
         MVALS,
         # EWAS results
