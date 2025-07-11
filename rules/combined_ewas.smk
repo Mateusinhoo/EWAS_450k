@@ -30,3 +30,13 @@ rule run_combined_ewas:
         --out-type {params.o_type} \
         --out-prefix {params.o_prefix} \
         """
+
+rule bacon_correction:
+    input:
+        raw_results
+    output:
+        bacon_results
+    conda:
+        "../envs/ewas.yaml"
+    shell:
+        "Rscript scripts/bacon_correction.R {input} {output}"
