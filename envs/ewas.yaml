@@ -1,37 +1,51 @@
 name: ewas
 channels:
-  - bioconda
   - conda-forge
+  - bioconda
   - r
   - nodefaults
+
 dependencies:
-  # Core languages
+  # R Base
   - r-base
 
-  # R:
-  - r-essentials  # includes tidyverse, devtools, Rcpp, etc.
+  # Core packages for EWAS pipeline
+  - r-essentials         # includes tidyverse, devtools, Rcpp, etc.
   - r-biocmanager
   - bioconductor-bacon
   - bioconductor-biocparallel
   - r-argparse
-  - r-qqman
-  - r-qcewas
-  - r-caret
+  - r-optparse
+  - r-yaml
+
+  # Data & plotting
+  - r-data.table
+  - r-dplyr
+  - r-tibble
+  - r-ggplot2
+  - r-cowplot
+  - r-reshape2
   - r-rmarkdown
-  - r-shiny
-  - r-fst
+  - r-qqman
+  - r-cli
+
+  # Parallelization & progress
+  - r-foreach
   - r-dofuture
+  - r-future             
   - r-progress
   - r-progressr
-  - r-foreach
   - r-vars
   - r-tictoc
-  - r-cli
-  - r-reshape2
+
+  # Utilities
+  - r-fst
   - r-r.utils
-  - r-cowplot
-  - r-ggplot2
+  - r-qcewas
+  - r-shiny
 
-
-
-
+  # Snakemake support
+  - python=3.10
+  - pandas
+  - mamba
+  - snakemake=7.32.4
