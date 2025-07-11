@@ -35,8 +35,20 @@ rule bacon_correction:
     input:
         raw_results
     output:
-        bacon_results
+        bacon_results,
+        *bacon_plots  # these are the images created by ggsave()
+    params:
+        out_prefix = OUT_PREFIX,
+        out_dir = OUT_DIR,
+        out_type = OUT_TYPE
     conda:
         "../envs/ewas.yaml"
     shell:
-        "Rscript scripts/bacon_correction.R {input} {output}"
+        """
+        mkdir -p {params.out_dir}/bacon_plots
+        Rscript scripts/run_bacon.R \
+            --input-file {input} \
+            --out-dir {params.out_dir} \
+            --out-prefix {params.out_prefix} \
+            --out-type {params.out_type}
+        """
