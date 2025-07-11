@@ -91,3 +91,5 @@ include: "rules/stratified_ewas.smk"
 include: "rules/annotate.smk"
 include: "rules/plots.smk"
 # include: "rules/dmr.smk"
+include: "rules/setup.smk"
+
