@@ -1,5 +1,5 @@
 rule make_results_dir:
     output:
-        "results/"
+        "results/.placeholder"
     shell:
-        "mkdir -p {output}"
+        "mkdir -p results && touch {output}"
