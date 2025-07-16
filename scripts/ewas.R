@@ -54,7 +54,9 @@ threads_fst(nr_of_threads = n_workers)
 if (endsWith(pheno_path, ".fst")) {
     pheno <- read_fst(pheno_path) %>% column_to_rownames(var=colnames(.)[1])
 } else {
-    pheno <- fread(pheno_path) %>% column_to_rownames(var=colnames(.)[1])
+    pheno <- fread(pheno_path)
+    colnames(pheno)[colnames(pheno) == "Patient ID"] <- "Samples_ID" 
+    pheno <- pheno %>% column_to_rownames(var=colnames(.)[1])
 }
 
 # Ensure Type is treated as a factor
