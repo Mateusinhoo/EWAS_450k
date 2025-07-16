@@ -13,6 +13,7 @@ snp_annotation: "data/snp_450k.csv"
 
 # DMR Analysis
 dmr_analysis: "no"
+genome_build: "hg38"
 
 # Parallelization
 chunk_size: 5000
