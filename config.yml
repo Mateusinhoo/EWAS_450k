@@ -4,7 +4,8 @@ pheno: "data/kidney_phenotype.csv"
 
 # EWAS model parameters
 association_variable: "Type"  # Primary solid Tumor vs. Solid Tissue Normal
-stratified_ewas: "no"         
+stratified_ewas: "no"    
+stratify_variables: []
 
 # Annotation files
 annotation_manifest: "data/manifest_450k.csv"
