@@ -1,19 +1,18 @@
 rule run_combined_ewas:
     input:
         script = "scripts/ewas.R",
-        pheno_file = config["pheno"],
-        methyl_file = config["mvals"]
+        pheno_file = PHENO,
+        methyl_file = MVALS
     params:
-        assoc_var = config["association_variable"],
-        stratified = config["stratified_ewas"],
-        cs = config["chunk_size"],
-        pt = config["processing_type"],
-        n_workers = config["workers"],
-        o_dir = config["out_directory"],
-        o_type = config["out_type"],
-        o_prefix = config["out_prefix"]
+        assoc_var = ASSOC,
+        cs = CHUNK_SIZE,
+        pt = PROCESSING_TYPE,
+        n_workers = N_WORKERS,
+        o_dir = OUT_DIR,
+        o_type = OUT_TYPE,
+        o_prefix = OUT_PREFIX
     output: 
-        config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_results" + config["out_type"]
+        raw_results
     conda:
         "../envs/ewas.yaml"
     shell:
@@ -22,7 +21,6 @@ rule run_combined_ewas:
         --pheno {input.pheno_file} \
         --methyl {input.methyl_file} \
         --assoc {params.assoc_var} \
-        --stratified {params.stratified} \
         --chunk-size {params.cs} \
         --processing-type {params.pt} \
         --workers {params.n_workers} \
