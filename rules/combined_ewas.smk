@@ -1,19 +1,19 @@
 rule run_combined_ewas:
     input:
         script = "scripts/ewas.R",
-        pheno_file = PHENO,
-        methyl_file = MVALS
+        pheno_file = config["pheno"],
+        methyl_file = config["mvals"]
     params:
-        assoc_var = ASSOC,
-        stratified = STRATIFIED,
-        cs = CHUNK_SIZE,
-        pt = PROCESSING_TYPE,
-        n_workers = N_WORKERS,
-        o_dir = OUT_DIR,
-        o_type = OUT_TYPE,
-        o_prefix = OUT_PREFIX,
+        assoc_var = config["association_variable"],
+        stratified = config["stratified_ewas"],
+        cs = config["chunk_size"],
+        pt = config["processing_type"],
+        n_workers = config["workers"],
+        o_dir = config["out_directory"],
+        o_type = config["out_type"],
+        o_prefix = config["out_prefix"]
     output: 
-        raw_results
+        config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_results" + config["out_type"]
     conda:
         "../envs/ewas.yaml"
     shell:
@@ -28,19 +28,19 @@ rule run_combined_ewas:
         --workers {params.n_workers} \
         --out-dir {params.o_dir} \
         --out-type {params.o_type} \
-        --out-prefix {params.o_prefix} \
+        --out-prefix {params.o_prefix}
         """
 
 rule bacon_correction:
     input:
-        raw_results
+        config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_results" + config["out_type"]
     output:
-        bacon_results,
-        *bacon_plots  # these are the images created by ggsave()
+        config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_bacon_results" + config["out_type"],
+        directory(config["out_directory"] + "/bacon_plots")
     params:
-        out_prefix = OUT_PREFIX,
-        out_dir = OUT_DIR,
-        out_type = OUT_TYPE
+        out_prefix = config["out_prefix"],
+        out_dir = config["out_directory"],
+        out_type = config["out_type"]
     conda:
         "../envs/ewas.yaml"
     shell:
