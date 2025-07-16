@@ -1,5 +1,5 @@
 rule make_results_dir:
     output:
-        "results/.placeholder"
+        directory(config["out_directory"])
     shell:
-        "mkdir -p results && touch {output}"
+        "mkdir -p {output}"
