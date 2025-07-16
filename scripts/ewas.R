@@ -57,6 +57,9 @@ if (endsWith(pheno_path, ".fst")) {
     pheno <- fread(pheno_path) %>% column_to_rownames(var=colnames(.)[1])
 }
 
+# Ensure Type is treated as a factor
+pheno$Type <- as.factor(pheno$Type)
+
 # Load methylation data
 if (endsWith(mvals_path, ".fst")) {
     mvals <- read_fst(mvals_path) %>% column_to_rownames(var=colnames(.)[1])
