@@ -34,9 +34,12 @@ rule run_combined_ewas:
 rule bacon_correction:
     input:
         config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_results" + config["out_type"]
-    output:
+   output:
         config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_bacon_results" + config["out_type"],
-        directory(config["out_directory"] + "/bacon_plots")
+        config["out_directory"] + "bacon_plots/" + config["out_prefix"] + "_" + config["association_variable"] + "_traces.jpg",
+        config["out_directory"] + "bacon_plots/" + config["out_prefix"] + "_" + config["association_variable"] + "_posteriors.jpg",
+        config["out_directory"] + "bacon_plots/" + config["out_prefix"] + "_" + config["association_variable"] + "_fit.jpg",
+        config["out_directory"] + "bacon_plots/" + config["out_prefix"] + "_" + config["association_variable"] + "_qqs.jpg"
     params:
         out_prefix = config["out_prefix"],
         out_dir = config["out_directory"],
@@ -45,7 +48,7 @@ rule bacon_correction:
         "../envs/ewas.yaml"
     shell:
         """
-        mkdir -p {params.out_dir}/bacon_plots
+        mkdir -p {params.out_dir}bacon_plots
         Rscript scripts/run_bacon.R \
             --input-file {input} \
             --out-dir {params.out_dir} \
