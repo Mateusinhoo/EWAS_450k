@@ -1,4 +1,4 @@
-# Make a bed file of the EWAS results
+# Make a BED file from EWAS results
 
 suppressPackageStartupMessages({
     library(R.utils)
@@ -8,60 +8,51 @@ suppressPackageStartupMessages({
     library(dplyr)
 })
 
-
-# Define command line arguments
-parser <- argparse::ArgumentParser(description="Script for making BED file from EWAS results")
-parser$add_argument("--results",
-                    required=TRUE,
-                    help="Path or URL to EWAS results file.")
-parser$add_argument('--out-dir', 
-                    type="character",
-                    nargs="?",                    
-                    const="~/", 
-                    default="~/",  
-                    help="Path to output directory")     
-parser$add_argument('--stratified',
-                    choices=c("yes", "no"), 
-                    default="no",
-                    help="Results from a stratified analysis: yes or no")
-parser$add_argument("--assoc", 
-                    required=TRUE,
-                    type="character", 
-                    nargs=1, 
-                    help="Association variable EWAS was performed with.")
-           
-
-# parse arguments
+# Arguments
+parser <- argparse::ArgumentParser(description="Make BED file from EWAS results")
+parser$add_argument("--results", required=TRUE, help="Path to EWAS annotated results file")
+parser$add_argument("--out-dir", default="~/", help="Output directory")
+parser$add_argument("--assoc", required=TRUE, help="Association variable used in EWAS")
 args <- parser$parse_args()
+
+# Load arguments
 results <- args$results
 out_dir <- args$out_dir
-stratified <- args$stratified
 assoc <- args$assoc
 
-# Read in EWAS results files
+# Load EWAS results
 res <- fread(results)
 
-# Wrangle results into BED format (chr, start, end, pvalue)
-if(stratified=="no"){
-    res <- res  %>% 
-            dplyr::select(CpG_chrm,CpG_beg,CpG_end, bacon.pval) %>%
-            arrange(CpG_chrm, CpG_beg)  %>% 
-            dplyr::rename("#chrom" = "CpG_chrm",
-                          "start" = "CpG_beg",
-                          "end" = "CpG_end",
-                          "pvals" = "bacon.pval")  
-} else{
-    res <- res  %>% 
-        dplyr::select(CpG_chrm,CpG_beg,CpG_end, "P-value")  %>%
-        arrange(CpG_chrm, CpG_beg)  %>% 
-        dplyr::rename("#chrom" = "CpG_chrm",
-                      "start" = "CpG_beg",
-                      "end" = "CpG_end",
-                      "pvals" = "P-value")
-                      
+# Check required columns
+required_cols <- c("CpG_chrm", "CpG_beg", "CpG_end")
+missing_cols <- setdiff(required_cols, colnames(res))
+if (length(missing_cols) > 0) {
+    stop(paste("ERROR: Missing required columns:", paste(missing_cols, collapse = ", ")))
 }
 
-# Export BED file
-file_name <- paste0(out_dir, assoc, "_ewas_annotated_results.bed")
-write.table(res, file = file_name, append = FALSE, sep = "\t",
-             row.names = FALSE, col.names = TRUE, quote = FALSE)
+# Determine p-value column
+if ("bacon.pval" %in% colnames(res)) {
+    res <- res %>%
+        select(CpG_chrm, CpG_beg, CpG_end, bacon.pval) %>%
+        arrange(CpG_chrm, CpG_beg) %>%
+        rename("#chrom" = CpG_chrm,
+               start = CpG_beg,
+               end = CpG_end,
+               pvals = bacon.pval)
+} else if ("P-value" %in% colnames(res)) {
+    res <- res %>%
+        select(CpG_chrm, CpG_beg, CpG_end, `P-value`) %>%
+        arrange(CpG_chrm, CpG_beg) %>%
+        rename("#chrom" = CpG_chrm,
+               start = CpG_beg,
+               end = CpG_end,
+               pvals = `P-value`)
+} else {
+    stop("ERROR: No p-value column found (bacon.pval or P-value).")
+}
+
+# Save BED file
+file_name <- paste0(out_dir, assoc, "_ewas_results.bed")
+write.table(res, file = file_name, sep = "\t", row.names = FALSE, col.names = TRUE, quote = FALSE)
+
+cat("BED file created at:", file_name, "\n")
