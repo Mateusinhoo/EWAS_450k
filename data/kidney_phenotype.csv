@@ -1,4 +1,4 @@
-Patient ID,Type,Study,Gender,Race
+Samples ID,Type,Study,Gender,Race
 TCGA-A3-3357,Primary solid Tumor,Kidney renal clear cell carcinoma,MALE,WHITE
 TCGA-A3-3357,Solid Tissue Normal,Kidney renal clear cell carcinoma,MALE,WHITE
 TCGA-A3-3358,Primary solid Tumor,Kidney renal clear cell carcinoma,FEMALE,WHITE
