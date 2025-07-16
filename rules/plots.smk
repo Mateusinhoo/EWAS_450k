@@ -8,7 +8,7 @@ rule plot_results:
         assoc = config["association_variable"],
         prefix = config["out_prefix"]
     output: 
-        config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_plots.png"
+       config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_manhattan_qq_plots.jpg"
     conda:
         "../envs/ewas.yaml"
     shell:
