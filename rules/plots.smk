@@ -1,14 +1,14 @@
 rule plot_results:
     input: 
-        in_file = annotated_results,
+        in_file = config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_annotated_results" + config["out_type"],
         script = "scripts/plots.R"
     params:
-        o_dir = OUT_DIR,
-        strat = STRATIFIED,
-        assoc = ASSOC,
-        prefix = OUT_PREFIX
+        o_dir = config["out_directory"],
+        strat = config["stratified_ewas"],
+        assoc = config["association_variable"],
+        prefix = config["out_prefix"]
     output: 
-        manhattan_qq_plot
+        config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_plots.png"
     conda:
         "../envs/ewas.yaml"
     shell:
