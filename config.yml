@@ -11,6 +11,9 @@ stratify_variables: []
 annotation_manifest: "data/manifest_450k.csv"
 snp_annotation: "data/snp_450k.csv"
 
+# DMR Analysis
+dmr_analysis: "no"
+
 # Parallelization
 chunk_size: 5000
 processing_type: "multicore"
