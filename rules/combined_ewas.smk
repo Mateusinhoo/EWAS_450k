@@ -34,7 +34,7 @@ rule run_combined_ewas:
 rule bacon_correction:
     input:
         config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_results" + config["out_type"]
-   output:
+    output:
         config["out_directory"] + config["out_prefix"] + "_" + config["association_variable"] + "_ewas_bacon_results" + config["out_type"],
         config["out_directory"] + "bacon_plots/" + config["out_prefix"] + "_" + config["association_variable"] + "_traces.jpg",
         config["out_directory"] + "bacon_plots/" + config["out_prefix"] + "_" + config["association_variable"] + "_posteriors.jpg",
