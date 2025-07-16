@@ -8,8 +8,8 @@ stratified_ewas: "no"
 stratify_variables: []
 
 # Annotation files
-annotation_manifest: "data/HM450.hg38.manifest.gencode.v36.tsv.gz"
-snp_annotation: "data/HM450.hg38.snp.tsv.gz"
+annotation_manifest: "annotation_files/HM450.hg38.manifest.gencode.v36.tsv.gz"
+snp_annotation: "annotation_files/HM450.hg38.snp.tsv.gz"
 
 # DMR Analysis
 dmr_analysis: "no"
