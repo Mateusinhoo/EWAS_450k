@@ -1,6 +1,7 @@
 # Input data
 mvals: "data/kidney_mvals.csv"
 pheno: "data/kidney_phenotype.csv"
+association_variable: "Type"
 
 # EWAS model parameters
 association_variable: "Type"  # Primary solid Tumor vs. Solid Tissue Normal
